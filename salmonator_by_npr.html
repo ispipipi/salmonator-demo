@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salmonator by NPR — Trazabilidad Operacional</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Buk palette */
+  --buk-purple:    #5B2D8E;
+  --buk-purple-d:  #3D1A6E;
+  --buk-purple-m:  #7B4DB8;
+  --buk-purple-l:  #EDE7F6;
+  --buk-purple-xl: #F5F0FC;
+  --buk-violet:    #9C6FD6;
+  --buk-green:     #00C48C;
+  --buk-green-l:   #E6FAF5;
+  --buk-green-d:   #00956A;
+  --buk-orange:    #FF6B35;
+  --buk-orange-l:  #FFF0EB;
+  --buk-blue:      #2196F3;
+  --buk-blue-l:    #E8F4FD;
+  --buk-yellow:    #FFC107;
+  --buk-yellow-l:  #FFFBEC;
+  --buk-red:       #F44336;
+  --buk-red-l:     #FEECEB;
+  /* neutrals */
+  --white:  #FFFFFF;
+  --gray-50: #F8F9FB;
+  --gray-100:#F1F3F7;
+  --gray-200:#E4E8F0;
+  --gray-300:#CBD1DE;
+  --gray-400:#9AA3B5;
+  --gray-500:#6B7492;
+  --gray-600:#4A5268;
+  --gray-700:#2D3250;
+  --gray-800:#1A1D2E;
+  --text:   #1A1D2E;
+  --text2:  #4A5268;
+  --text3:  #9AA3B5;
+  --border: #E4E8F0;
+  --font:   'Nunito', sans-serif;
+  --mono:   'JetBrains Mono', monospace;
+  --r:      10px;
+  --r-lg:   14px;
+  --r-xl:   20px;
+  --shadow: 0 1px 4px rgba(91,45,142,.05), 0 4px 16px rgba(91,45,142,.06);
+  --shadow-md: 0 4px 20px rgba(91,45,142,.10), 0 1px 4px rgba(0,0,0,.05);
+}
+html{font-size:14px}
+body{font-family:var(--font);background:var(--gray-50);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:8px}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ══════════════════════════
+   SIDEBAR — estilo Buk
+   ══════════════════════════ */
+.sb{
+  width:230px;flex-shrink:0;
+  background:linear-gradient(175deg, var(--buk-purple-d) 0%, var(--buk-purple) 60%, var(--buk-purple-m) 100%);
+  display:flex;flex-direction:column;overflow-y:auto;
+  box-shadow:2px 0 20px rgba(91,45,142,.25);
+  position:relative;
+}
+.sb::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:180px;
+  background:radial-gradient(ellipse at 50% 120%, rgba(156,111,214,.3) 0%, transparent 70%);
+  pointer-events:none;
+}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo-wrap{display:flex;align-items:center;gap:10px}
+.sb-mark{
+  width:36px;height:36px;background:linear-gradient(135deg,#fff,rgba(255,255,255,.85));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.sb-name{color:#fff;font-size:15px;font-weight:800;letter-spacing:-.3px}
+.sb-tag{
+  background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);
+  font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;
+  letter-spacing:.5px;text-transform:uppercase;margin-left:2px;
+  border:1px solid rgba(255,255,255,.2);
+}
+
+.sb-section{padding:20px 12px 6px}
+.sb-sec-label{
+  color:rgba(255,255,255,.35);font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.2px;padding:0 8px 8px;
+  font-family:var(--mono);
+}
+.ni{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  border-radius:10px;cursor:pointer;color:rgba(255,255,255,.6);
+  font-size:13px;font-weight:600;transition:all .18s;
+  border:none;background:none;width:100%;text-align:left;margin-bottom:2px;
+}
+.ni:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.92)}
+.ni.active{background:rgba(255,255,255,.18);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.ni-ico{
+  width:28px;height:28px;border-radius:8px;
+  background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;transition:background .18s;
+}
+.ni.active .ni-ico{background:rgba(255,255,255,.25)}
+.ni-badge{
+  margin-left:auto;font-size:10px;padding:2px 7px;border-radius:20px;
+  font-weight:700;font-family:var(--mono);
+}
+.nb-ok{background:rgba(0,196,140,.25);color:#00F0AE}
+.nb-warn{background:rgba(255,193,7,.25);color:#FFD54F}
+.nb-err{background:rgba(244,67,54,.25);color:#FF8A80}
+
+.sb-footer{
+  margin-top:auto;padding:16px 20px 20px;
+  border-top:1px solid rgba(255,255,255,.08);position:relative;z-index:1;
+}
+.sb-user{display:flex;align-items:center;gap:9px}
+.sb-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,255,255,.3),rgba(255,255,255,.15));
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;flex-shrink:0;
+  border:2px solid rgba(255,255,255,.25);
+}
+.sb-uname{color:rgba(255,255,255,.85);font-size:12px;font-weight:700}
+.sb-urole{color:rgba(255,255,255,.4);font-size:10px;margin-top:1px}
+.sb-pulse{display:flex;align-items:center;gap:6px;margin-top:10px}
+.dot-live{width:6px;height:6px;background:#00C48C;border-radius:50%;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,196,140,.5)}50%{opacity:.6;box-shadow:0 0 0 4px rgba(0,196,140,0)}}
+.sb-live-txt{color:rgba(255,255,255,.3);font-size:10px;font-family:var(--mono)}
+
+/* ══════════════════════════
+   MAIN AREA
+   ══════════════════════════ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+.topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;
+  flex-shrink:0;box-shadow:0 1px 0 var(--border);
+}
+.pg-title{font-size:16px;font-weight:800;letter-spacing:-.4px;color:var(--text)}
+.pg-breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
+.pg-breadcrumb span{color:var(--text2)}
+.topbar-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.topbar-badge{
+  background:var(--buk-purple-xl);color:var(--buk-purple);
+  font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
+  font-family:var(--mono);border:1px solid rgba(91,45,142,.15);
+}
+.content{flex:1;overflow-y:auto;padding:24px}
+
+/* ══════════════════════════
+   PANELS
+   ══════════════════════════ */
+.panel{display:none}.panel.active{display:block}
+
+/* ══════════════════════════
+   COMPONENTS
+   ══════════════════════════ */
+.btn{
+  font-family:var(--font);font-size:13px;font-weight:700;
+  padding:9px 18px;border-radius:10px;border:none;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;transition:all .18s;
+  letter-spacing:-.2px;
+}
+.btn-p{background:linear-gradient(135deg,var(--buk-purple-m),var(--buk-purple));color:#fff;box-shadow:0 2px 8px rgba(91,45,142,.3)}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(91,45,142,.4)}
+.btn-g{background:var(--white);color:var(--text2);border:1.5px solid var(--border)}.btn-g:hover{background:var(--gray-50);border-color:var(--gray-300)}
+.btn-green{background:linear-gradient(135deg,#00C48C,#00956A);color:#fff;box-shadow:0 2px 8px rgba(0,196,140,.3)}
+.btn-green:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,196,140,.4)}
+.btn-sm{font-size:12px;padding:6px 12px;border-radius:8px}
+
+/* Cards */
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow)}
+.card-t{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+
+/* Section header */
+.sec-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.sec-title{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--text)}
+.sec-sub{font-size:12px;color:var(--text3);margin-top:3px;font-weight:500}
+
+/* Grids */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+
+/* KPI cards — estilo Buk */
+.kpi-card{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:18px 20px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;cursor:default;
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.kpi-card::before{
+  content:'';position:absolute;top:0;right:0;width:80px;height:80px;
+  border-radius:0 0 0 80px;opacity:.06;
+}
+.kpi-card.purple::before{background:var(--buk-purple)}
+.kpi-card.green::before{background:var(--buk-green)}
+.kpi-card.orange::before{background:var(--buk-orange)}
+.kpi-card.blue::before{background:var(--buk-blue)}
+.kpi-icon{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  margin-bottom:12px;
+}
+.kpi-icon.purple{background:var(--buk-purple-l);color:var(--buk-purple)}
+.kpi-icon.green{background:var(--buk-green-l);color:var(--buk-green-d)}
+.kpi-icon.orange{background:var(--buk-orange-l);color:var(--buk-orange)}
+.kpi-icon.blue{background:var(--buk-blue-l);color:var(--buk-blue)}
+.kpi-label{font-size:12px;font-weight:600;color:var(--text3);margin-bottom:4px}
+.kpi-value{font-size:28px;font-weight:800;letter-spacing:-1.5px;line-height:1;color:var(--text)}
+.kpi-delta{font-size:11px;font-weight:600;margin-top:6px;display:flex;align-items:center;gap:4px}
+.delta-up{color:var(--buk-green-d)}.delta-dn{color:var(--buk-red)}
+.delta-chip{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+.dc-up{background:var(--buk-green-l);color:var(--buk-green-d)}
+.dc-dn{background:var(--buk-red-l);color:var(--buk-red)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;gap:4px}
+.b-ok{background:var(--buk-green-l);color:var(--buk-green-d)}
+.b-warn{background:var(--buk-yellow-l);color:#B07800}
+.b-err{background:var(--buk-red-l);color:var(--buk-red)}
+.b-purple{background:var(--buk-purple-l);color:var(--buk-purple)}
+.b-blue{background:var(--buk-blue-l);color:var(--buk-blue)}
+.b-gray{background:var(--gray-100);color:var(--gray-500)}
+.b-orange{background:var(--buk-orange-l);color:var(--buk-orange)}
+
+/* Alerts */
+.al{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.45;font-weight:500}
+.al:last-child{margin-bottom:0}
+.al.warn{background:var(--buk-yellow-l);border:1.5px solid rgba(255,193,7,.3);color:#664900}
+.al.err{background:var(--buk-red-l);border:1.5px solid rgba(244,67,54,.2);color:#C62828}
+.al.ok{background:var(--buk-green-l);border:1.5px solid rgba(0,196,140,.2);color:var(--buk-green-d)}
+.al.info{background:var(--buk-blue-l);border:1.5px solid rgba(33,150,243,.2);color:#1565C0}
+.al.purple{background:var(--buk-purple-xl);border:1.5px solid rgba(91,45,142,.15);color:var(--buk-purple)}
+.al-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.al strong{font-weight:700;display:block;margin-bottom:2px}
+
+/* Table */
+.tw{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:11px 14px;text-align:left;background:var(--gray-50);border-bottom:1.5px solid var(--border);font-family:var(--mono)}
+td{padding:11px 14px;font-size:13px;border-bottom:1.5px solid var(--border);vertical-align:middle;font-weight:500}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--buk-purple-xl)}
+.td-m{font-family:var(--mono);font-size:12px}
+.td-purple{color:var(--buk-purple);font-weight:700}
+.v-ok{color:var(--buk-green-d);font-weight:700}
+.v-warn{color:#B07800;font-weight:700}
+.v-err{color:var(--buk-red);font-weight:700}
+
+/* Progress */
+.pb-w{height:6px;background:var(--gray-100);border-radius:10px;overflow:hidden}
+.pb-f{height:100%;border-radius:10px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.pb-purple{background:linear-gradient(90deg,var(--buk-purple-m),var(--buk-violet))}
+.pb-green{background:linear-gradient(90deg,var(--buk-green),#4DD0B0)}
+.pb-orange{background:linear-gradient(90deg,var(--buk-orange),#FF9A6C)}
+.pb-red{background:var(--buk-red)}
+
+/* Form */
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.fr.c3{grid-template-columns:1fr 1fr 1fr}
+.fr.c1{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fl{font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.2px}
+.fi,.fs{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:9px;padding:9px 12px;font-family:var(--font);
+  font-size:13px;font-weight:500;color:var(--text);width:100%;
+  transition:border-color .18s,box-shadow .18s;
+}
+.fi:focus,.fs:focus{outline:none;border-color:var(--buk-purple-m);box-shadow:0 0 0 3px rgba(91,45,142,.12)}
+.fi::placeholder{color:var(--gray-400)}
+
+/* ══════════════════════════
+   PIPELINE (flujo de lote)
+   ══════════════════════════ */
+.pipeline{display:flex;align-items:center;gap:0;overflow-x:auto;padding:8px 0}
+.pipe-step{flex:1;min-width:90px;text-align:center;position:relative}
+.pipe-connector{
+  position:absolute;right:-12px;top:22px;width:24px;height:2px;
+  z-index:1;
+}
+.pipe-connector-done{background:linear-gradient(90deg,var(--buk-green),var(--buk-green))}
+.pipe-connector-pending{background:var(--gray-200)}
+.pipe-circle{
+  width:46px;height:46px;border-radius:50%;margin:0 auto 8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;border:2.5px solid transparent;transition:all .4s;
+}
+.pc-done{background:var(--buk-green-l);border-color:var(--buk-green);color:var(--buk-green-d)}
+.pc-active{background:var(--buk-purple-l);border-color:var(--buk-purple);color:var(--buk-purple);animation:ring-p 1.5s ease-in-out infinite}
+.pc-pending{background:var(--gray-100);border-color:var(--gray-300);color:var(--gray-400)}
+@keyframes ring-p{0%,100%{box-shadow:0 0 0 0 rgba(91,45,142,.3)}50%{box-shadow:0 0 0 8px rgba(91,45,142,0)}}
+.pipe-label{font-size:12px;font-weight:700;color:var(--text)}
+.pipe-sub{font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)}
+
+/* ══════════════════════════
+   BALANCE DE MASA
+   ══════════════════════════ */
+.balance-card{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px;
+  box-shadow:var(--shadow);transition:box-shadow .2s;
+}
+.balance-card:hover{box-shadow:var(--shadow-md)}
+.bc-header{
+  padding:14px 18px;border-bottom:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--gray-50);
+}
+.bc-lot{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--buk-purple)}
+.bc-name{font-size:13px;font-weight:700;color:var(--text)}
+.bc-stages{display:grid;grid-template-columns:repeat(5,1fr)}
+.bcs{
+  padding:14px 12px;border-right:1.5px solid var(--border);
+  cursor:pointer;transition:background .15s;position:relative;
+}
+.bcs:last-child{border-right:none}
+.bcs:hover{background:var(--buk-purple-xl)}
+.bcs.current{background:linear-gradient(180deg,var(--buk-purple-xl),var(--white));border-bottom:3px solid var(--buk-purple)}
+.bcs-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.bcs-icon-wrap{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.bcs-n{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.bcs-kg{font-size:20px;font-weight:800;letter-spacing:-1px;color:var(--text);font-family:var(--mono)}
+.bcs-lbl{font-size:10px;color:var(--text3);font-weight:500;margin-top:2px}
+.bcs-diff{
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;
+  margin-top:6px;display:inline-block;font-family:var(--mono);
+}
+.bd-ok{background:var(--buk-green-l);color:var(--buk-green-d)}
+.bd-warn{background:var(--buk-yellow-l);color:#B07800}
+.bd-err{background:var(--buk-red-l);color:var(--buk-red)}
+.bd-neutral{background:var(--gray-100);color:var(--gray-500)}
+.bcs-sub{display:flex;flex-direction:column;gap:3px;margin-top:8px;font-size:10px;font-family:var(--mono)}
+.bsi{display:flex;justify-content:space-between}
+.bsi-k{color:var(--text3)}.bsi-v{font-weight:600}
+.ok{color:var(--buk-green-d)}.warn{color:#B07800}.err{color:var(--buk-red)}
+
+/* Sankey */
+.sankey-wrap{padding:14px 18px;border-top:1.5px solid var(--border)}
+.sankey-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.sk-row{display:flex;align-items:center;gap:10px;height:28px;margin-bottom:5px}
+.sk-lbl{font-size:10px;font-family:var(--mono);font-weight:600;min-width:80px;text-align:right;color:var(--text2)}
+.sk-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:10px;font-weight:700;color:#fff;transition:width .9s ease;white-space:nowrap;overflow:hidden;min-width:4px}
+.sk-prod{background:linear-gradient(90deg,var(--buk-green),#4DD0B0)}
+.sk-des{background:linear-gradient(90deg,#FF8C42,var(--buk-orange))}
+.sk-merma{background:linear-gradient(90deg,var(--gray-400),var(--gray-300))}
+
+/* BC footer */
+.bc-footer{
+  padding:10px 18px;background:var(--gray-50);border-top:1.5px solid var(--border);
+  display:flex;align-items:center;gap:16px;font-size:11px;font-weight:600;
+}
+.bcf-item{display:flex;align-items:center;gap:5px}
+.bcf-dot{width:8px;height:8px;border-radius:50%}
+
+/* Diff banner */
+.dbanner{
+  border-radius:10px;padding:10px 14px;margin-bottom:12px;
+  font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;
+}
+.db-ok{background:var(--buk-green-l);color:var(--buk-green-d);border:1.5px solid rgba(0,196,140,.25)}
+.db-warn{background:var(--buk-yellow-l);color:#B07800;border:1.5px solid rgba(255,193,7,.3)}
+.db-err{background:var(--buk-red-l);color:var(--buk-red);border:1.5px solid rgba(244,67,54,.2)}
+
+/* Stage form */
+.sf{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.sf-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1.5px solid var(--border)}
+.sf-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.sf-title{font-size:15px;font-weight:800;color:var(--text)}
+.sf-sub{font-size:11px;color:var(--text3);font-weight:500;margin-top:2px}
+.entry-help{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.entry-step{background:var(--gray-50);border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;display:flex;gap:8px;align-items:center}
+.entry-num{width:22px;height:22px;border-radius:7px;background:var(--buk-purple);color:#fff;font-family:var(--mono);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.entry-txt{font-size:11px;font-weight:800;color:var(--text2);line-height:1.25}
+.form-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.action-note{font-size:11px;font-weight:700;color:var(--text3)}
+.flow-map{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:18px}
+.flow-node{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:12px 10px;min-height:82px;box-shadow:var(--shadow);position:relative}
+.flow-node::after{content:'›';position:absolute;right:-9px;top:30px;color:var(--gray-400);font-size:22px;font-weight:800;z-index:2}
+.flow-node:last-child::after{display:none}
+.flow-ico{font-size:18px;margin-bottom:6px}
+.flow-title{font-size:11px;font-weight:900;color:var(--text);line-height:1.2}
+.flow-sub{font-size:9px;font-weight:700;color:var(--text3);margin-top:4px;line-height:1.25}
+.ocr-card{background:linear-gradient(135deg,var(--buk-blue-l),#fff);border:1.5px solid rgba(33,150,243,.22);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.ocr-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+.ocr-title{font-size:15px;font-weight:900;color:var(--text)}
+.ocr-sub{font-size:11px;font-weight:700;color:var(--text3);margin-top:2px}
+.ocr-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ocr-field{background:#fff;border:1.5px solid rgba(33,150,243,.15);border-radius:10px;padding:10px}
+.ocr-k{font-size:9px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:var(--text3)}
+.ocr-v{font-size:13px;font-weight:900;color:var(--text);margin-top:3px}
+.scan-box{background:var(--gray-800);color:#7CF0D0;border-radius:12px;padding:12px 14px;font-family:var(--mono);font-size:11px;line-height:1.7;margin-bottom:14px}
+.check-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.check-pill{border:1.5px solid var(--border);border-radius:10px;padding:10px;background:var(--gray-50);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--text2)}
+.check-pill.ok{background:var(--buk-green-l);border-color:rgba(0,196,140,.25);color:var(--buk-green-d)}
+.label-preview{background:var(--white);border:1.5px dashed var(--gray-300);border-radius:12px;padding:14px;font-family:var(--mono);font-size:11px;line-height:1.8}
+.scan-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.scan-item{display:flex;justify-content:space-between;gap:10px;background:var(--gray-50);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800}
+
+/* KG row calc */
+.kg-row{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.kg-g{display:flex;flex-direction:column;gap:5px;flex:1;min-width:120px}
+.kg-op{font-size:20px;color:var(--gray-400);padding-bottom:10px;flex-shrink:0}
+.kg-res{flex:1;min-width:120px;background:var(--gray-50);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px}
+.kr-l{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.kr-v{font-size:16px;font-weight:800;font-family:var(--mono)}
+.kr-ok{color:var(--buk-green-d)}.kr-warn{color:#B07800}.kr-err{color:var(--buk-red)}.kr-neu{color:var(--text3)}
+
+/* Cuadre summary table */
+.ct{width:100%;border-collapse:collapse;font-size:11px}
+.ct th{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:9px 12px;background:var(--gray-50);border-bottom:1.5px solid var(--border);font-family:var(--mono);text-align:left}
+.ct td{padding:9px 12px;border-bottom:1.5px solid var(--border);font-family:var(--mono);font-weight:600}
+.ct tr:last-child td{border-bottom:none}
+.ct tr.r-ok td{background:rgba(230,250,245,.5)}
+.ct tr.r-warn td{background:rgba(255,251,236,.5)}
+.ct tr.r-err td{background:rgba(254,236,235,.5)}
+
+/* Modal */
+.mo{position:fixed;inset:0;background:rgba(26,29,46,.45);z-index:999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.mo.open{display:flex}
+.mb{background:var(--white);border-radius:var(--r-xl);padding:24px;width:min(560px,92vw);max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(91,45,142,.2),0 4px 12px rgba(0,0,0,.1)}
+.mh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+.mt-m{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.mc{background:var(--gray-100);border:none;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:background .15s}
+.mc:hover{background:var(--gray-200)}
+
+/* ══════════════════════════
+   CAMERA CARDS
+   ══════════════════════════ */
+.cam-card{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow);
+  transition:transform .2s,box-shadow .2s;
+}
+.cam-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.cam-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cam-name{font-size:15px;font-weight:800;color:var(--text)}
+.cam-temp{font-family:var(--mono);font-size:15px;font-weight:700}
+.t-ok{color:var(--buk-blue)}.t-warn{color:var(--buk-orange)}.t-err{color:var(--buk-red)}
+
+/* ══════════════════════════
+   SIMULATION
+   ══════════════════════════ */
+.sim-hero{
+  background:linear-gradient(135deg, var(--buk-purple-d) 0%, var(--buk-purple) 50%, var(--buk-purple-m) 100%);
+  border-radius:var(--r-xl);padding:24px;margin-bottom:16px;
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 32px rgba(91,45,142,.3);
+}
+.sim-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);
+}
+.sim-hero::after{
+  content:'';position:absolute;bottom:-60px;left:-20px;
+  width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(156,111,214,.3) 0%,transparent 70%);
+}
+.sh-title{color:rgba(255,255,255,.5);font-size:10px;font-family:var(--mono);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px;position:relative;z-index:1}
+.sim-track{position:relative;height:72px;z-index:1}
+.sim-road{position:absolute;top:30px;left:8%;right:8%;height:4px;background:rgba(255,255,255,.1);border-radius:2px}
+.sim-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--buk-green),rgba(255,255,255,.8));transition:width 1.3s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px rgba(0,196,140,.5)}
+.sim-cps{position:absolute;top:0;left:8%;right:8%;height:100%}
+.sim-cp{position:absolute;top:0;height:100%;display:flex;flex-direction:column;align-items:center}
+.sim-cpd{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.15);border:2.5px solid rgba(255,255,255,.2);margin-top:23px;transition:all .4s;z-index:2}
+.sim-cpd.reach{background:var(--buk-green);border-color:var(--buk-green);box-shadow:0 0 0 4px rgba(0,196,140,.25)}
+.sim-cpd.cur{background:#fff;border-color:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.25);animation:cpw 1.2s ease-in-out infinite}
+@keyframes cpw{0%,100%{box-shadow:0 0 0 3px rgba(255,255,255,.3)}50%{box-shadow:0 0 0 10px rgba(255,255,255,0)}}
+.sim-cpl{font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.3);margin-top:5px;text-align:center;line-height:1.3;font-weight:600}
+.sim-cpl.reach{color:rgba(255,255,255,.75)}
+.sim-truck{position:absolute;top:8px;font-size:26px;transition:left 1.3s cubic-bezier(.4,0,.2,1);transform:translateX(-50%);z-index:5;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))}
+.sim-stages{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:16px;position:relative;z-index:1}
+.ss{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 8px;text-align:center;transition:all .4s}
+.ss.act{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35);box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.ss.done{background:rgba(0,196,140,.15);border-color:rgba(0,196,140,.35)}
+.ss-ico{font-size:20px;display:block;margin-bottom:5px}
+.ss-name{font-size:11px;font-weight:700;color:rgba(255,255,255,.65);display:block}
+.ss-kg{font-size:10px;font-family:var(--mono);color:rgba(255,255,255,.3);margin-top:3px;display:block}
+.ss.act .ss-name{color:#fff}.ss.act .ss-kg{color:#7CF0D0}
+.ss.done .ss-kg{color:var(--buk-green)}
+.sim-ctrl{display:flex;gap:10px;align-items:center;margin-top:16px;position:relative;z-index:1}
+.btn-go{
+  background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.1));
+  color:#fff;font-family:var(--font);font-size:13px;font-weight:800;
+  padding:10px 22px;border-radius:10px;border:1.5px solid rgba(255,255,255,.3);
+  cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px;
+  letter-spacing:-.2px;backdrop-filter:blur(4px);
+}
+.btn-go:hover{background:rgba(255,255,255,.25);box-shadow:0 4px 16px rgba(0,0,0,.2);transform:translateY(-1px)}
+.btn-go:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-rst{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);font-family:var(--font);font-size:12px;font-weight:700;padding:9px 16px;border-radius:10px;border:1.5px solid rgba(255,255,255,.12);cursor:pointer;transition:all .15s}
+.btn-rst:hover{background:rgba(255,255,255,.15);color:#fff}
+.sim-lot-info{color:rgba(255,255,255,.35);font-size:10px;font-family:var(--mono);margin-left:auto;font-weight:500}
+
+/* Sim detail cards */
+.sim-dg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.sdc{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;transition:all .3s;box-shadow:var(--shadow)}
+.sdc.hl{border-color:var(--buk-purple-m);box-shadow:0 0 0 3px rgba(91,45,142,.08),var(--shadow-md)}
+.sdc-h{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.sdc-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sdc-title{font-size:13px;font-weight:800;color:var(--text)}
+.sdc-sub{font-size:10px;color:var(--text3);font-weight:500}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1.5px solid var(--border);font-size:12px}
+.dr:last-child{border-bottom:none}
+.dk{color:var(--text3);font-weight:600}.dv{font-family:var(--mono);font-weight:700}
+.dv-ok{color:var(--buk-green-d)}.dv-w{color:#B07800}.dv-e{color:var(--buk-red)}
+
+/* Terminal */
+.term{background:var(--gray-800);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-md)}
+.term-h{background:#141621;padding:10px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(255,255,255,.06)}
+.td2{width:10px;height:10px;border-radius:50%}
+.term-lbl{font-size:10px;color:rgba(255,255,255,.2);font-family:var(--mono);margin-left:8px}
+.term-b{padding:14px 16px;max-height:180px;overflow-y:auto;font-family:var(--mono);font-size:11px;line-height:1.8}
+.ll{display:flex;gap:10px}
+.lts{color:rgba(255,255,255,.2);flex-shrink:0}
+.lok{color:#7CF0D0}.lwarn{color:#FFD080}.lerr{color:#FF8A80}
+.linf{color:rgba(255,255,255,.45)}.lhead{color:#A8C8FF;font-weight:600}
+
+/* Yield donut-style gauge */
+.yield-wrap{display:flex;align-items:center;gap:16px;padding:8px 0}
+.yield-circle{position:relative;width:72px;height:72px;flex-shrink:0}
+.yield-circle svg{transform:rotate(-90deg)}
+.yield-circle-bg{fill:none;stroke:var(--gray-100);stroke-width:6}
+.yield-circle-fg{fill:none;stroke:var(--buk-green);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.yield-val-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:var(--mono);color:var(--text)}
+.yield-info{flex:1}
+.yield-big{font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--buk-green-d)}
+.yield-lbl{font-size:11px;font-weight:600;color:var(--text3);margin-top:2px}
+
+/* Mass balance viz */
+.mass-boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.mbox{border-radius:10px;padding:10px 12px;text-align:center}
+.mbox-in{background:var(--buk-purple-l);border:1.5px solid rgba(91,45,142,.2)}
+.mbox-out{background:var(--buk-green-l);border:1.5px solid rgba(0,196,140,.2)}
+.mbox-des{background:var(--buk-orange-l);border:1.5px solid rgba(255,107,53,.2)}
+.mbox-mer{background:var(--gray-100);border:1.5px solid var(--border)}
+.mbox-kg{font-size:18px;font-weight:800;font-family:var(--mono);color:var(--text)}
+.mbox-lbl{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+
+/* Cert */
+.cert{background:linear-gradient(135deg,var(--buk-green-l),rgba(255,255,255,.8));border:2px dashed var(--buk-green);border-radius:var(--r-lg);padding:20px;text-align:center}
+.cert-icon{font-size:44px;display:block;margin-bottom:8px}
+.cert-title{font-size:15px;font-weight:800;color:var(--buk-green-d)}
+.cert-sub{font-size:11px;color:var(--text3);font-weight:600;margin-top:4px}
+.cert-code{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--buk-green-d);margin-top:10px;background:rgba(0,196,140,.1);padding:5px 14px;border-radius:20px;display:inline-block;letter-spacing:1px}
+
+/* Chip filter */
+.chip-row{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;transition:all .18s}
+.chip.active{background:var(--buk-purple);color:#fff;border-color:var(--buk-purple);box-shadow:0 2px 8px rgba(91,45,142,.3)}
+.chip:hover:not(.active){background:var(--buk-purple-xl);border-color:rgba(91,45,142,.3);color:var(--buk-purple)}
+
+/* Chipax bar */
+.chipax-bar{
+  background:linear-gradient(90deg,var(--buk-blue-l),rgba(255,255,255,.6));
+  border:1.5px solid rgba(33,150,243,.2);border-radius:10px;
+  padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:12px;font-weight:600;
+}
+.chipax-logo{background:var(--buk-blue);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:5px;font-family:var(--mono);letter-spacing:.5px}
+
+/* UX polish */
+.sb-brand-sub{color:rgba(255,255,255,.58);font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.topbar{position:sticky;top:0;z-index:20}
+.brand-lockup{display:flex;align-items:center;gap:9px;margin-right:12px;padding-right:14px;border-right:1.5px solid var(--border)}
+.brand-dot{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--buk-orange),var(--buk-purple));display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;box-shadow:0 6px 18px rgba(255,107,53,.22)}
+.brand-title{font-size:13px;font-weight:900;letter-spacing:.4px;color:var(--text);line-height:1}
+.brand-by{font-size:9px;font-weight:800;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.page-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.quick-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.quick-action{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;text-align:left;font-family:var(--font);transition:transform .18s,box-shadow .18s,border-color .18s}
+.quick-action:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);border-color:rgba(91,45,142,.25)}
+.qa-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qa-title{font-size:13px;font-weight:800;color:var(--text);line-height:1.15}
+.qa-sub{font-size:10px;font-weight:700;color:var(--text3);margin-top:2px}
+.tw{overflow:auto}
+.tw table{min-width:760px}
+.ct{min-width:1100px}
+.toast-wrap{position:fixed;right:18px;bottom:18px;z-index:1200;display:flex;flex-direction:column;gap:10px;width:min(360px,calc(100vw - 28px))}
+.toast{background:var(--white);border:1.5px solid var(--border);border-left:5px solid var(--buk-purple);border-radius:12px;box-shadow:0 16px 48px rgba(26,29,46,.16);padding:12px 14px;animation:toast-in .22s ease-out;font-size:12px;font-weight:700;color:var(--text2);line-height:1.45}
+.toast.ok{border-left-color:var(--buk-green)}.toast.warn{border-left-color:var(--buk-yellow)}.toast.err{border-left-color:var(--buk-red)}
+.toast strong{display:block;color:var(--text);font-size:13px;margin-bottom:1px}
+@keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+@media (max-width:1100px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(2,1fr)}
+  .quick-strip{grid-template-columns:repeat(2,1fr)}
+  .bc-stages{grid-template-columns:repeat(2,minmax(180px,1fr))}
+  .bcs{border-bottom:1.5px solid var(--border)}
+  .sim-stages{grid-template-columns:repeat(5,minmax(92px,1fr));overflow-x:auto}
+}
+@media (max-width:780px){
+  .app{display:block;height:auto;min-height:100vh;overflow:visible}
+  .sb{width:100%;height:auto;max-height:none;overflow-x:auto;display:block;white-space:nowrap;box-shadow:none;border-bottom:1px solid rgba(255,255,255,.16)}
+  .sb-logo,.sb-section,.sb-footer{display:inline-block;vertical-align:top;border:0;padding:12px}
+  .sb-section{min-width:178px}
+  .sb-footer{display:none}
+  .main{display:block;overflow:visible}
+  .topbar{height:auto;min-height:58px;padding:10px 14px;align-items:flex-start;gap:10px;flex-wrap:wrap}
+  .topbar-r{margin-left:0;width:100%;justify-content:space-between}
+  .content{padding:14px;overflow:visible}
+  .sec-hdr{gap:12px;flex-direction:column;align-items:stretch}
+  .g4,.g3,.g2,.quick-strip,.sim-dg{grid-template-columns:1fr}
+  .flow-map,.ocr-grid,.check-row{grid-template-columns:1fr}
+  .flow-node::after{display:none}
+  .fr,.fr.c3{grid-template-columns:1fr}
+  .kg-row{display:grid;grid-template-columns:1fr}
+  .entry-help{grid-template-columns:1fr}
+  .kg-op{padding:0;text-align:center}
+  .bc-stages{grid-template-columns:1fr}
+  .bc-footer{flex-wrap:wrap}
+  .sim-ctrl{flex-wrap:wrap}
+  .sim-lot-info{margin-left:0;width:100%}
+  .brand-lockup{border-right:0;padding-right:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-wrap">
+      <div class="sb-mark">🐟</div>
+      <div>
+        <div class="sb-name">Salmonator</div>
+        <div class="sb-brand-sub">by NPR</div>
+      </div>
+      <span class="sb-tag">Live</span>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-sec-label">General</div>
+    <button class="ni active" data-nav="dashboard" onclick="go('dashboard',this)"><span class="ni-ico">📊</span>Dashboard</button>
+    <button class="ni" data-nav="trazabilidad" onclick="go('trazabilidad',this)"><span class="ni-ico">🧭</span>Flujo Operacional<span class="ni-badge nb-ok">11</span></button>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-sec-label">Puntos de Control</div>
+    <button class="ni" data-nav="pc1" onclick="go('pc1',this)"><span class="ni-ico">📧</span>Guía + OCR<span class="ni-badge nb-ok">auto</span></button>
+    <button class="ni" data-nav="pc2" onclick="go('pc2',this)"><span class="ni-ico">✅</span>Recepción Caja OK</button>
+    <button class="ni" data-nav="pc3" onclick="go('pc3',this)"><span class="ni-ico">🔪</span>Semiterminado</button>
+    <button class="ni" data-nav="pc4" onclick="go('pc4',this)"><span class="ni-ico">🏷️</span>Empaque / Despacho</button>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-sec-label">Reportes</div>
+    <button class="ni" data-nav="stock" onclick="go('stock',this)"><span class="ni-ico">📈</span>Stock</button>
+    <button class="ni" data-nav="oc" onclick="go('oc',this)"><span class="ni-ico">📋</span>Guías OCR</button>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-sec-label">Demo</div>
+    <button class="ni" data-nav="sim" onclick="go('sim',this)" style="background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.2)"><span class="ni-ico" style="background:rgba(255,255,255,.2)">▶</span>Simulación</button>
+  </div>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">JP</div>
+      <div>
+        <div class="sb-uname">Juan Pérez</div>
+        <div class="sb-urole">Jefe de Planta</div>
+      </div>
+    </div>
+    <div class="sb-pulse">
+      <div class="dot-live"></div>
+      <div class="sb-live-txt">SISTEMA ACTIVO · v3.0</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="brand-lockup">
+      <div class="brand-dot">🐟</div>
+      <div><div class="brand-title">Salmonator</div><div class="brand-by">by NPR</div></div>
+    </div>
+    <div>
+      <div class="pg-title" id="pg-t">Dashboard</div>
+    </div>
+    <div class="topbar-r">
+      <span class="topbar-badge" id="t-date"></span>
+      <div class="page-actions">
+        <button class="btn btn-g btn-sm" onclick="go('trazabilidad')">🧭 Flujo</button>
+        <button class="btn btn-p btn-sm" onclick="go('sim')">▶ Simulación</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ══════════ DASHBOARD ══════════ -->
+  <div class="panel active" id="p-dashboard">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Resumen Operacional</div><div class="sec-sub">Guía por correo → OCR → lote → producción → despacho · Hoy <span id="dash-date"></span></div></div>
+    </div>
+    <div class="flow-map">
+      <div class="flow-node"><div class="flow-ico">📧</div><div class="flow-title">Guía por correo</div><div class="flow-sub">guias@planta.cl</div></div>
+      <div class="flow-node"><div class="flow-ico">🔎</div><div class="flow-title">OCR automático</div><div class="flow-sub">Proveedor, cajas, kg</div></div>
+      <div class="flow-node"><div class="flow-ico">🧾</div><div class="flow-title">Lote creado</div><div class="flow-sub">antes de llegada</div></div>
+      <div class="flow-node"><div class="flow-ico">⚖️</div><div class="flow-title">Caja OK + pesaje</div><div class="flow-sub">cajas y kg contra guía</div></div>
+      <div class="flow-node"><div class="flow-ico">🔪</div><div class="flow-title">Semiterminado</div><div class="flow-sub">filete + pulpa</div></div>
+      <div class="flow-node"><div class="flow-ico">🔫</div><div class="flow-title">Pistoleo despacho</div><div class="flow-sub">rebaja stock</div></div>
+    </div>
+    <div class="quick-strip">
+      <button class="quick-action" onclick="go('pc1')"><span class="qa-ico" style="background:var(--buk-blue-l)">📧</span><span><span class="qa-title">Procesar guía</span><span class="qa-sub">Correo + OCR + lote</span></span></button>
+      <button class="quick-action" onclick="go('pc2')"><span class="qa-ico" style="background:var(--buk-green-l)">⚖️</span><span><span class="qa-title">Recepción</span><span class="qa-sub">Caja OK + pesaje</span></span></button>
+      <button class="quick-action" onclick="go('pc3')"><span class="qa-ico" style="background:var(--buk-purple-l)">🔪</span><span><span class="qa-title">Semiterminado</span><span class="qa-sub">Rendimiento diario</span></span></button>
+      <button class="quick-action" onclick="go('pc4')"><span class="qa-ico" style="background:var(--buk-orange-l)">🔫</span><span><span class="qa-title">Despacho</span><span class="qa-sub">Pistoleo y stock</span></span></button>
+    </div>
+    <div class="g4">
+      <div class="kpi-card purple">
+        <div class="kpi-icon purple">🐟</div>
+        <div class="kpi-label">Guías OCR hoy</div>
+        <div class="kpi-value">12</div>
+        <div class="kpi-delta"><span class="delta-chip dc-up">10 auto</span><span style="color:var(--text3);font-size:11px;font-weight:500">2 manuales</span></div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-icon green">📦</div>
+        <div class="kpi-label">Lotes Activos</div>
+        <div class="kpi-value" id="d-lotes">6</div>
+        <div class="kpi-delta"><span class="delta-chip dc-up">3</span><span style="color:var(--text3);font-size:11px;font-weight:500">lote + fecha</span></div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-icon orange">📉</div>
+        <div class="kpi-label">Rendimiento Diario</div>
+        <div class="kpi-value">75.8%</div>
+        <div class="kpi-delta"><span class="delta-chip dc-up">meta 75-76%</span><span style="color:var(--text3);font-size:11px;font-weight:500">semiterminado</span></div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-icon blue">⚠️</div>
+        <div class="kpi-label">Cajas pendientes OK</div>
+        <div class="kpi-value" style="color:var(--buk-red)">18</div>
+        <div class="kpi-delta"><span class="delta-chip dc-dn">1 guía</span><span style="color:var(--text3);font-size:11px;font-weight:500">en recepción</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-t">Flujo activo — LOT-2026-031 · 05/05 · Salmón Atlántico · GD-77821</div>
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-connector pipe-connector-done" style="right:-12px"></div>
+          <div class="pipe-circle pc-done">✓</div>
+          <div class="pipe-label">Correo + OCR</div><div class="pipe-sub">guía leída</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-connector pipe-connector-done" style="right:-12px"></div>
+          <div class="pipe-circle pc-done">✓</div>
+          <div class="pipe-label">Recepción</div><div class="pipe-sub">128 cajas · 3.218 kg</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-connector pipe-connector-done" style="right:-12px"></div>
+          <div class="pipe-circle pc-done">✓</div>
+          <div class="pipe-label">Tránsito</div><div class="pipe-sub">a descongelado</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-connector pipe-connector-pending" style="right:-12px"></div>
+          <div class="pipe-circle pc-active">⚙</div>
+          <div class="pipe-label">Semiterminado</div><div class="pipe-sub">rendimiento 75.8%</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-circle pc-pending">□</div>
+          <div class="pipe-label">Pistoleo</div><div class="pipe-sub">rebaja stock</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="card-t">Alertas Operacionales</div>
+        <div class="al warn"><span class="al-icon">⚠️</span><div><strong>GD-77829 — OCR con confianza 82%</strong>Revisar manualmente calibre antes de crear lote</div></div>
+        <div class="al err"><span class="al-icon">🚨</span><div><strong>LOT-2026-030 · 05/05 — rendimiento 72.4%</strong>Bajo estándar 75%-76%, revisar proceso hoy</div></div>
+        <div class="al ok"><span class="al-icon">✅</span><div><strong>LOT-2026-032 · 05/05 — Caja OK</strong>24/24 cajas recibidas contra guía</div></div>
+        <div class="al purple"><span class="al-icon">ℹ️</span><div><strong>Modo manual disponible</strong>Para contingencia por internet o falla de OCR</div></div>
+      </div>
+      <div class="card">
+        <div class="card-t">Lotes — Estado de Cuadre</div>
+        <div id="d-lots-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ FLUJO OPERACIONAL ══════════ -->
+  <div class="panel" id="p-trazabilidad">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Flujo Operacional</div><div class="sec-sub">Guía por correo → OCR → lote + fecha → Caja OK → semiterminado → stock</div></div>
+    </div>
+    <div class="flow-map">
+      <div class="flow-node"><div class="flow-ico">📧</div><div class="flow-title">Correo genérico</div><div class="flow-sub">proveedores envían guía</div></div>
+      <div class="flow-node"><div class="flow-ico">🔎</div><div class="flow-title">OCR guía</div><div class="flow-sub">extrae datos clave</div></div>
+      <div class="flow-node"><div class="flow-ico">🧾</div><div class="flow-title">Lote automático</div><div class="flow-sub">antes de planta</div></div>
+      <div class="flow-node"><div class="flow-ico">⚖️</div><div class="flow-title">Caja OK + pesaje</div><div class="flow-sub">primer control físico</div></div>
+      <div class="flow-node"><div class="flow-ico">🔪</div><div class="flow-title">Semiterminado</div><div class="flow-sub">filete + pulpa</div></div>
+      <div class="flow-node"><div class="flow-ico">🔫</div><div class="flow-title">Despacho</div><div class="flow-sub">pistoleo rebaja stock</div></div>
+    </div>
+    <div class="tw" style="margin-bottom:18px">
+      <table class="ct"><thead><tr>
+        <th>Guía</th><th>Lote + Fecha</th><th>Proveedor</th><th>Cajas Guía</th><th>Caja OK</th><th>KG Guía</th><th>KG Pesaje</th><th>Δ kg</th><th>Ubicación</th><th>Filete</th><th>Pulpa</th><th>Rend.</th><th>Estado</th>
+      </tr></thead><tbody id="cuadre-tbody"></tbody></table>
+    </div>
+    <div id="balance-cards"></div>
+  </div>
+
+  <!-- ══════════ PC-1 OCR GUÍA ══════════ -->
+  <div class="panel" id="p-pc1">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Guía por Correo + OCR</div><div class="sec-sub">La guía de despacho gatilla la creación automática del lote</div></div>
+    </div>
+    <div class="ocr-card">
+      <div class="ocr-head">
+        <div><div class="ocr-title">Bandeja guias@planta.cl</div><div class="ocr-sub">Proveedor envía la guía antes de que salga el camión. El sistema lee el adjunto y prepara el lote.</div></div>
+        <span class="badge b-ok">OCR activo</span>
+      </div>
+      <div class="scan-box">09:14 · correo recibido de despachos@marbrava.cl<br>09:15 · adjunto GD-77821.pdf leído por OCR<br>09:15 · lote LOT-2026-031 creado automáticamente · pendiente llegada</div>
+      <div class="ocr-grid">
+        <div class="ocr-field"><div class="ocr-k">Guía</div><div class="ocr-v">GD-77821</div></div>
+        <div class="ocr-field"><div class="ocr-k">Proveedor</div><div class="ocr-v">Mar Brava</div></div>
+        <div class="ocr-field"><div class="ocr-k">Cajas</div><div class="ocr-v">128</div></div>
+        <div class="ocr-field"><div class="ocr-k">Lote</div><div class="ocr-v">LOT-2026-031</div></div>
+      </div>
+    </div>
+    <div id="f-rec" style="margin-bottom:16px">
+      <div class="sf">
+        <div class="sf-hdr"><div class="sf-ico" style="background:var(--buk-blue-l)">🔎</div><div><div class="sf-title">Crear lote desde guía</div><div class="sf-sub">Ingreso simple con OCR y opción manual por contingencia</div></div></div>
+        <div class="entry-help">
+          <div class="entry-step"><span class="entry-num">1</span><span class="entry-txt">Leer guía del correo</span></div>
+          <div class="entry-step"><span class="entry-num">2</span><span class="entry-txt">Validar datos OCR</span></div>
+          <div class="entry-step"><span class="entry-num">3</span><span class="entry-txt">Crear lote automático</span></div>
+        </div>
+        <div class="fr c3">
+          <div class="fg"><label class="fl">N° guía despacho</label><input class="fi" id="r-guia" placeholder="GD-77821" value="GD-77821"></div>
+          <div class="fg"><label class="fl">Proveedor</label><input class="fi" id="r-oc" placeholder="Mar Brava" value="Mar Brava"></div>
+          <div class="fg"><label class="fl">Especie</label><select class="fs" id="r-esp"><option>Salmón Atlántico HG</option><option>Coho Filete</option><option>Trucha HGT</option></select></div>
+        </div>
+        <div class="fr c3">
+          <div class="fg"><label class="fl">Cajas según guía</label><input class="fi" id="r-cajas-guia" type="number" value="128"></div>
+          <div class="fg"><label class="fl">KG referenciales guía</label><input class="fi" id="r-kg-oc" type="number" value="3215" oninput="calcRec()"></div>
+          <div class="fg"><label class="fl">Ingreso</label><select class="fs"><option>OCR automático</option><option>Manual contingencia</option></select></div>
+        </div>
+        <div id="r-banner" style="display:none" class="dbanner db-ok">✓ Cuadre OK</div>
+        <div class="form-actions">
+          <button class="btn btn-green" onclick="regRec()">✓ Crear lote desde guía</button>
+          <button class="btn btn-g" onclick="notify('Modo manual','Formulario disponible para caída de internet u OCR.')">Ingreso manual</button>
+          <span class="action-note">La recepción física se confirma después con Caja OK.</span>
+        </div>
+      </div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Lote</th><th>Guía</th><th>Proveedor</th><th>Especie</th><th>Cajas guía</th><th>KG guía</th><th>Estado</th><th>Detalle</th></tr></thead>
+    <tbody id="pc1-tbody"></tbody></table></div>
+  </div>
+
+  <!-- ══════════ PC-2 RECEPCIÓN / UBICACIÓN ══════════ -->
+  <div class="panel" id="p-pc2">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Recepción Caja OK + Pesaje Inicial</div><div class="sec-sub">Se valida cantidad de cajas y primer pesaje físico contra la guía antes de ubicar el lote</div></div>
+    </div>
+    <div id="f-cam" style="margin-bottom:16px">
+      <div class="sf">
+        <div class="sf-hdr"><div class="sf-ico" style="background:var(--buk-green-l)">⚖️</div><div><div class="sf-title">Confirmar recepción física</div><div class="sf-sub">Caja OK + pesaje inicial como punto de control</div></div></div>
+        <div class="entry-help">
+          <div class="entry-step"><span class="entry-num">1</span><span class="entry-txt">Selecciona lote creado por OCR</span></div>
+          <div class="entry-step"><span class="entry-num">2</span><span class="entry-txt">Marca Caja OK y pesa</span></div>
+          <div class="entry-step"><span class="entry-num">3</span><span class="entry-txt">Define cámara/tránsito/descongelado</span></div>
+        </div>
+        <div class="check-row">
+          <div class="check-pill ok">✅ Cajas íntegras</div>
+          <div class="check-pill ok">✅ 128/128 contra guía</div>
+          <div class="check-pill ok">⚖️ pesaje dentro tolerancia</div>
+        </div>
+        <div class="fr c3">
+          <div class="fg"><label class="fl">Lote</label><select class="fs" id="c-lot" onchange="calcCam()"><option value="">Seleccionar...</option></select></div>
+          <div class="fg"><label class="fl">Ubicación</label><select class="fs" id="c-cam"><option>Cámara C-01</option><option>Cámara C-02</option><option>Cámara C-03</option><option>Tránsito a proceso</option><option>Descongelado</option></select></div>
+          <div class="fg"><label class="fl">Cajas recibidas OK</label><input class="fi" id="c-kg" type="number" placeholder="128" oninput="calcCam()"></div>
+        </div>
+        <div class="fr c3">
+          <div class="fg"><label class="fl">KG guía</label><input class="fi" id="c-kg-guia" type="number" readonly style="background:var(--gray-100);cursor:not-allowed" placeholder="Automático"></div>
+          <div class="fg"><label class="fl">KG pesaje inicial</label><input class="fi" id="c-kg-pesaje" type="number" placeholder="0" oninput="calcCam()"></div>
+          <div class="fg"><label class="fl">Tolerancia pesaje</label><select class="fs"><option>≤ 0.5%</option><option>≤ 1.0%</option><option>Requiere autorización</option></select></div>
+        </div>
+        <div id="c-ref" style="padding:8px 12px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--text3);font-weight:600;margin-bottom:10px">Selecciona un lote para ver referencia</div>
+        <div id="c-banner" style="display:none" class="dbanner db-ok">✓ Cuadre OK</div>
+        <div class="form-actions">
+          <button class="btn btn-green" onclick="regCam()">✓ Guardar recepción</button>
+          <span class="action-note">El KG de pesaje inicial queda como primer control físico de masa.</span>
+        </div>
+      </div>
+    </div>
+    <div class="g3" id="cam-cards"></div>
+    <div class="tw"><table><thead><tr><th>Lote</th><th>Ubicación</th><th>Cajas Guía</th><th>Cajas OK</th><th>KG Guía</th><th>KG Pesaje</th><th>Δ kg</th><th>Tiempo</th><th>Estado</th></tr></thead>
+    <tbody id="pc2-tbody"></tbody></table></div>
+  </div>
+
+  <!-- ══════════ PC-3 SEMITERMINADO ══════════ -->
+  <div class="panel" id="p-pc3">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Semiterminado + Rendimiento Diario</div><div class="sec-sub">Primer pesaje real después de fileteado: filete + pulpa, trazado por lote + fecha</div></div>
+    </div>
+    <div id="f-prod" style="margin-bottom:16px">
+      <div class="sf">
+        <div class="sf-hdr"><div class="sf-ico" style="background:var(--buk-purple-l)">🔪</div><div><div class="sf-title">Registrar semiterminado</div><div class="sf-sub">No se pistolea tina por tina; la trazabilidad queda por lote y fecha de producción</div></div></div>
+        <div class="entry-help">
+          <div class="entry-step"><span class="entry-num">1</span><span class="entry-txt">Lote + fecha producción</span></div>
+          <div class="entry-step"><span class="entry-num">2</span><span class="entry-txt">Pesar filete y pulpa</span></div>
+          <div class="entry-step"><span class="entry-num">3</span><span class="entry-txt">Comparar rendimiento 75%-76%</span></div>
+        </div>
+        <div class="fr c3">
+          <div class="fg"><label class="fl">Lote</label><select class="fs" id="p-lot" onchange="loadProdLot()"><option value="">Seleccionar...</option></select></div>
+          <div class="fg"><label class="fl">Fecha producción</label><input class="fi" id="p-prod" value="05/05/2026"></div>
+          <div class="fg"><label class="fl">KG materia prima</label><input class="fi" id="p-kg-in" type="number" readonly style="background:var(--gray-100);cursor:not-allowed" placeholder="Automático"></div>
+        </div>
+        <div class="kg-row">
+          <div class="kg-g"><label class="fl">KG Filete semiterminado</label><input class="fi" id="p-kg-prod" type="number" placeholder="0" oninput="calcProd()"></div>
+          <div class="kg-op">+</div>
+          <div class="kg-g"><label class="fl">KG Pulpa raspado</label><input class="fi" id="p-kg-des" type="number" placeholder="0" oninput="calcProd()"></div>
+          <div class="kg-op">+</div>
+          <div class="kg-g"><label class="fl">KG Merma / descarte</label><input class="fi" id="p-kg-merma" type="number" placeholder="0" oninput="calcProd()"></div>
+          <div class="kg-op">=</div>
+          <div class="kg-res"><div class="kr-l">Semiterminado</div><div class="kr-v kr-neu" id="p-total">—</div></div>
+          <div class="kg-res"><div class="kr-l">Rendimiento</div><div class="kr-v" style="color:var(--buk-green-d)" id="p-yield">—</div></div>
+        </div>
+        <div id="p-banner" style="display:none" class="dbanner db-ok">✓ Rendimiento dentro de estándar</div>
+        <div class="form-actions">
+          <button class="btn btn-green" onclick="regProd()">✓ Registrar</button>
+          <span class="action-note">Dato útil para rendimiento diario y pago/control del proceso.</span>
+        </div>
+      </div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Lote + Fecha</th><th>KG MP</th><th>Filete</th><th>Pulpa</th><th>Merma</th><th>Semiterminado</th><th>Rendimiento</th><th>Meta</th><th>Estado</th></tr></thead>
+    <tbody id="pc3-tbody"></tbody></table></div>
+  </div>
+
+  <!-- ══════════ PC-4 EMPAQUE / DESPACHO ══════════ -->
+  <div class="panel" id="p-pc4">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Empaque Manual + Despacho con Pistoleo</div><div class="sec-sub">Paola ingresa empaque manual; el pistoleo se usa al cargar camión para rebajar stock</div></div>
+    </div>
+    <div id="f-desp" style="margin-bottom:16px">
+      <div class="sf">
+        <div class="sf-hdr"><div class="sf-ico" style="background:var(--buk-green-l)">🏷️</div><div><div class="sf-title">Empaque producto terminado</div><div class="sf-sub">Etiqueta simple: lote, calidad, fecha producción, vencimiento y calibre</div></div></div>
+        <div class="entry-help">
+          <div class="entry-step"><span class="entry-num">1</span><span class="entry-txt">Empaque manual</span></div>
+          <div class="entry-step"><span class="entry-num">2</span><span class="entry-txt">Etiqueta simple</span></div>
+          <div class="entry-step"><span class="entry-num">3</span><span class="entry-txt">Pistoleo al despacho</span></div>
+        </div>
+        <div class="fr c3">
+          <div class="fg"><label class="fl">Lote</label><select class="fs" id="d-lot" onchange="loadDespLot()"><option value="">Seleccionar...</option></select></div>
+          <div class="fg"><label class="fl">Calidad / calibre</label><input class="fi" id="d-dest" placeholder="Premium · 4-5 lb"></div>
+          <div class="fg"><label class="fl">KG empacados</label><input class="fi" id="d-kg" type="number" placeholder="0" oninput="calcDesp()"></div>
+        </div>
+        <div class="g2">
+          <div class="label-preview">ETIQUETA<br>LOTE: LOT-2026-031 · FECHA: 05/05/2026<br>CALIDAD: Premium · CALIBRE: 4-5 lb<br>VENCE: 20/05/2026</div>
+          <div><div class="card-t">Pistoleo despacho</div><div class="scan-list"><div class="scan-item"><span>BC-LOT-031-0001</span><span class="v-ok">leído</span></div><div class="scan-item"><span>BC-LOT-031-0002</span><span class="v-ok">leído</span></div><div class="scan-item"><span>Stock</span><span class="v-warn">rebaja al cargar</span></div></div></div>
+        </div>
+        <div id="d-ref" style="padding:8px 12px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--text3);font-weight:600;margin-bottom:10px">Selecciona un lote para ver semiterminado disponible</div>
+        <div id="d-banner" style="display:none" class="dbanner db-ok">✓ Stock disponible</div>
+        <div class="form-actions">
+          <button class="btn btn-green" onclick="regDesp()">✓ Registrar empaque</button>
+          <button class="btn btn-p" onclick="notify('Despacho pistoleado','2 cajas cargadas · stock rebajado automáticamente.')">🔫 Pistolear despacho</button>
+          <span class="action-note">No se exige pistoleo en empaque, solo en despacho.</span>
+        </div>
+      </div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Lote + Fecha</th><th>Calidad</th><th>Calibre</th><th>Cajas</th><th>KG Empaque</th><th>Despachado</th><th>Stock restante</th><th>Estado</th></tr></thead>
+    <tbody id="pc4-tbody"></tbody></table></div>
+  </div>
+
+  <!-- ══════════ STOCK ══════════ -->
+  <div class="panel" id="p-stock">
+    <div class="sec-hdr"><div><div class="sec-title">Inventario General</div><div class="sec-sub">Cámaras, tránsito, descongelado, semiterminado y terminado · rebaja por pistoleo</div></div></div>
+    <div class="chip-row">
+      <span class="chip active" onclick="fStock(this,'all')">Todos</span>
+      <span class="chip" onclick="fStock(this,'camara')">Cámara</span>
+      <span class="chip" onclick="fStock(this,'transito')">Tránsito</span>
+      <span class="chip" onclick="fStock(this,'descongelado')">Descongelado</span>
+      <span class="chip" onclick="fStock(this,'semi')">Semiterminado</span>
+      <span class="chip" onclick="fStock(this,'terminado')">Terminado</span>
+    </div>
+    <div class="tw"><table><thead><tr><th>Producto</th><th>Lote + Fecha</th><th>Ubicación</th><th>KG Stock</th><th>Ocupación</th><th>Estado</th></tr></thead>
+    <tbody id="stock-tbody"></tbody></table></div>
+  </div>
+
+  <!-- ══════════ GUÍAS OCR ══════════ -->
+  <div class="panel" id="p-oc">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Guías de Despacho OCR</div><div class="sec-sub">Documento principal del flujo. OC queda fuera de la operación diaria para simplificar.</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-g" onclick="notify('Correo revisado','guias@planta.cl · 3 guías nuevas procesadas.')">📧 Revisar correo</button>
+        <button class="btn btn-p" onclick="toggleF('f-oc')">+ Ingreso manual</button>
+      </div>
+    </div>
+    <div class="chipax-bar"><span class="chipax-logo">OCR</span><span style="color:var(--buk-blue)">Bandeja activa: guias@planta.cl · lectura automática de adjuntos PDF/JPG</span><span style="margin-left:auto;font-size:11px;color:var(--text3);font-weight:600">fallback manual ✓</span></div>
+    <div id="f-oc" style="display:none;margin-bottom:14px">
+      <div class="sf">
+        <div class="fr c3">
+          <div class="fg"><label class="fl">Proveedor</label><input class="fi" id="oc-prov" placeholder="Nombre proveedor"></div>
+          <div class="fg"><label class="fl">Especie</label><select class="fs" id="oc-esp"><option>Salmón Atlántico HG</option><option>Coho</option><option>Trucha HGT</option></select></div>
+          <div class="fg"><label class="fl">Cajas guía</label><input class="fi" id="oc-kg" type="number" placeholder="0"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="crearOC()">Crear guía/lote</button>
+          <button class="btn btn-g" onclick="toggleF('f-oc')">Cancelar</button>
+        </div>
+      </div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Guía</th><th>Origen</th><th>Proveedor</th><th>Especie</th><th>Cajas</th><th>Fecha</th><th>Estado</th></tr></thead>
+    <tbody id="oc-tbody"></tbody></table></div>
+  </div>
+
+  <!-- ══════════ SIMULACIÓN ══════════ -->
+  <div class="panel" id="p-sim">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Simulación — Flujo Roberto / Ricardo</div><div class="sec-sub">Guía por correo, OCR, Caja OK, semiterminado, empaque manual y despacho con pistoleo</div></div>
+      <span class="topbar-badge" id="sim-prog">0 / 6 etapas</span>
+    </div>
+
+    <div class="sim-hero">
+      <div class="sh-title">🗺 Ruta GD-SIM-001 · LOT-SIM-001 · Salmón Atlántico · 128 cajas · Mar Brava</div>
+      <div class="sim-track">
+        <div class="sim-road"><div class="sim-fill" id="s-fill"></div></div>
+        <div class="sim-cps" id="s-cps"></div>
+        <div class="sim-truck" id="s-truck" style="left:2%">🚛</div>
+      </div>
+      <div class="sim-stages" id="s-stages"></div>
+      <div class="sim-ctrl">
+        <button class="btn-go" id="s-btn" onclick="nextPhase()">▶ Iniciar Simulación</button>
+        <button class="btn-rst" onclick="resetSim()">↺ Reiniciar</button>
+        <div class="sim-lot-info" id="s-step">Listo para iniciar</div>
+      </div>
+    </div>
+
+    <div class="sim-dg" id="s-cards"></div>
+
+    <div class="term">
+      <div class="term-h">
+        <div class="td2" style="background:#FF5F57"></div>
+        <div class="td2" style="background:#FEBC2E"></div>
+        <div class="td2" style="background:#28C840"></div>
+        <span class="term-lbl">salmoneitor-log · control-de-masa · planta-san-agustín</span>
+      </div>
+      <div class="term-b" id="s-log">
+        <div class="ll"><span class="lts">--:--</span><span class="linf">Salmonator v3.0 · Sistema listo · Presione Iniciar</span></div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="mo" id="modal">
+  <div class="mb">
+    <div class="mh"><div class="mt-m" id="m-title">Lote</div><button class="mc" onclick="closeM()">×</button></div>
+    <div id="m-body"></div>
+  </div>
+</div>
+<div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const D={
+  lotes:[
+    {id:'LOT-2026-028',fecha_prod:'05/05/2026',guia:'GD-77812',esp:'Salmón Atlántico HG',prov:'Mar Brava',cajas_guia:84,cajas_ok:84,kg_oc:2100,kg_rec:2100,kg_cam:2100,kg_prod_in:2100,kg_prod_out:1320,kg_des:272,kg_merma:508,kg_desp:null,stage:'semi',camara:'Descongelado',temp:-1.2,fecha:'05/05',oc:'GD-77812',producto:'Filete semiterminado',yield:75.8,destino:null,horas:8,pulpa:272,calidad:null,calibre:null,cajas_pack:0,kg_pack:0,kg_stock:1592},
+    {id:'LOT-2026-029',fecha_prod:'05/05/2026',guia:'GD-77818',esp:'Coho HG',prov:'Trusal',cajas_guia:66,cajas_ok:66,kg_oc:1640,kg_rec:1640,kg_cam:1640,kg_prod_in:1640,kg_prod_out:1042,kg_des:190,kg_merma:408,kg_desp:980,stage:'terminado',camara:'Cámara C-02',temp:-1.9,fecha:'05/05',oc:'GD-77818',producto:'Filete C/P G1-2',yield:75.1,destino:'Friosa Santiago',horas:14,pulpa:190,calidad:'Premium',calibre:'4-5 lb',cajas_pack:49,kg_pack:1042,kg_stock:62},
+    {id:'LOT-2026-030',fecha_prod:'05/05/2026',guia:'GD-77820',esp:'Trucha HGT',prov:'Cermaq',cajas_guia:40,cajas_ok:40,kg_oc:985,kg_rec:985,kg_cam:985,kg_prod_in:985,kg_prod_out:604,kg_des:109,kg_merma:272,kg_desp:null,stage:'semi',camara:'Tránsito a proceso',temp:-2.3,fecha:'05/05',oc:'GD-77820',producto:'HGT Maduro',yield:72.4,destino:null,horas:4,pulpa:109,calidad:null,calibre:null,cajas_pack:0,kg_pack:0,kg_stock:713},
+    {id:'LOT-2026-031',fecha_prod:'05/05/2026',guia:'GD-77821',esp:'Salmón Atlántico HG',prov:'Mar Brava',cajas_guia:128,cajas_ok:128,kg_oc:3215,kg_rec:3215,kg_cam:3215,kg_prod_in:null,kg_prod_out:null,kg_des:null,kg_merma:null,kg_desp:null,stage:'descongelado',camara:'Descongelado',temp:-1.0,fecha:'05/05',oc:'GD-77821',producto:null,yield:null,destino:null,horas:2,pulpa:null,calidad:null,calibre:null,cajas_pack:0,kg_pack:0,kg_stock:3215},
+    {id:'LOT-2026-032',fecha_prod:'04/05/2026',guia:'GD-77795',esp:'Coho IQF Cubitos',prov:'Trusal',cajas_guia:24,cajas_ok:24,kg_oc:261,kg_rec:261,kg_cam:261,kg_prod_in:261,kg_prod_out:174,kg_des:24,kg_merma:63,kg_desp:174,stage:'despachado',camara:'Despacho',temp:-2.5,fecha:'04/05',oc:'GD-77795',producto:'Coho IQF',yield:75.9,destino:'Cliente local',horas:0,pulpa:24,calidad:'Estándar',calibre:'Cubitos',cajas_pack:12,kg_pack:174,kg_stock:0},
+    {id:'LOT-2026-034',fecha_prod:'',guia:'GD-77829',esp:'Salmón Atlántico HG',prov:'Mar Brava',cajas_guia:72,cajas_ok:null,kg_oc:1800,kg_rec:null,kg_cam:null,kg_prod_in:null,kg_prod_out:null,kg_des:null,kg_merma:null,kg_desp:null,stage:'ocr',camara:'En tránsito',temp:null,fecha:'05/05',oc:'GD-77829',producto:null,yield:null,destino:null,horas:0,pulpa:null,calidad:null,calibre:null,cajas_pack:0,kg_pack:0,kg_stock:1800}
+  ],
+  ocs:[
+    {id:'GD-77812',tipo:'OCR',prov:'Mar Brava',esp:'Salmón Atlántico',kg:84,fecha:'05/05',est:'lote_creado'},
+    {id:'GD-77818',tipo:'OCR',prov:'Trusal',esp:'Coho',kg:66,fecha:'05/05',est:'caja_ok'},
+    {id:'GD-77820',tipo:'OCR',prov:'Cermaq',esp:'Trucha',kg:40,fecha:'05/05',est:'descongelado'},
+    {id:'GD-77821',tipo:'OCR',prov:'Mar Brava',esp:'Salmón Atlántico',kg:128,fecha:'05/05',est:'en_tránsito'},
+    {id:'GD-77829',tipo:'MANUAL',prov:'Mar Brava',esp:'Salmón Atlántico',kg:72,fecha:'05/05',est:'revisar_ocr'},
+  ],
+  stock:[
+    {prod:'Salmón HG fresco',lote:'LOT-2026-031 · 05/05',ubi:'Descongelado',kg:3215,max:4000,st:'descongelado'},
+    {prod:'Salmón HG fresco',lote:'LOT-2026-034',ubi:'En tránsito',kg:1800,max:3000,st:'transito'},
+    {prod:'Filete semiterminado',lote:'LOT-2026-028 · 05/05',ubi:'Bins azules',kg:1320,max:2500,st:'semi'},
+    {prod:'Pulpa raspado',lote:'LOT-2026-028 · 05/05',ubi:'Bins grises',kg:272,max:600,st:'semi'},
+    {prod:'Filete C/P G1-2',lote:'LOT-2026-029 · 05/05',ubi:'Producto terminado',kg:62,max:1200,st:'terminado'},
+    {prod:'Coho IQF',lote:'LOT-2026-032 · 04/05',ubi:'Despachado',kg:0,max:500,st:'terminado'},
+  ]
+};
+
+const fmt=n=>n==null?'—':Math.round(n).toLocaleString('es-CL');
+const absPct=(a,b)=>b&&b!==0?Math.abs((a-b)/b*100):0;
+const sBanner=(actual,ref)=>{if(!actual||!ref)return null;const d=actual-ref,p=absPct(actual,ref);const s=d>=0?'+':'';if(p<=0.5)return['ok','✓ Cuadre OK · Δ '+s+Math.round(d)+' kg ('+p.toFixed(2)+'%)'];if(p<=2)return['warn','⚠ Fuera tolerancia · Δ '+s+Math.round(d)+' kg ('+p.toFixed(1)+'%) — Justificar'];return['err','✗ Diferencia crítica · Δ '+s+Math.round(d)+' kg ('+p.toFixed(1)+'%) — Autorización requerida'];};
+function getCuadre(l){
+  if(l.stage==='ocr')return{cls:'b-blue',lbl:'OCR pendiente'};
+  if(l.cajas_ok==null)return{cls:'b-warn',lbl:'Caja OK pendiente'};
+  if(!l.kg_rec)return{cls:'b-warn',lbl:'Pesaje pendiente'};
+  if(absPct(l.kg_rec,l.kg_oc)>0.5)return{cls:'b-warn',lbl:'Revisar pesaje'};
+  if(l.yield&&l.yield<74)return{cls:'b-err',lbl:'Rendimiento bajo'};
+  if(l.stage==='despachado')return{cls:'b-ok',lbl:'Despachado'};
+  if(l.stage==='semi')return{cls:l.yield>=75&&l.yield<=76.5?'b-ok':'b-warn',lbl:(l.yield||0).toFixed(1)+'% rend.'};
+  return{cls:'b-ok',lbl:'Operativo'};
+}
+
+// ═══════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════
+const pgInfo={dashboard:'Dashboard',trazabilidad:'Flujo Operacional',pc1:'Guía + OCR',pc2:'Caja OK / Ubicación',pc3:'Semiterminado',pc4:'Empaque / Despacho',stock:'Stock',oc:'Guías OCR',sim:'Simulación'};
+function go(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  const nav=el||document.querySelector(`[data-nav="${id}"]`);
+  if(nav)nav.classList.add('active');
+  document.getElementById('pg-t').textContent=pgInfo[id]||id;
+  const m={dashboard:rDash,trazabilidad:rBalance,pc1:rPC1,pc2:rPC2,pc3:rPC3,pc4:rPC4,stock:()=>rStock(null),oc:rOC,sim:initSim};
+  if(m[id])m[id]();
+}
+function toggleF(id){const f=document.getElementById(id);f.style.display=f.style.display==='none'?'block':'none';}
+function notify(title,msg,type='ok'){
+  const wrap=document.getElementById('toast-wrap');
+  const item=document.createElement('div');
+  item.className='toast '+type;
+  item.innerHTML=`<strong>${title}</strong>${msg}`;
+  wrap.appendChild(item);
+  setTimeout(()=>{item.style.opacity='0';item.style.transform='translateY(8px)';},3600);
+  setTimeout(()=>item.remove(),4000);
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+function rDash(){
+  document.getElementById('d-lotes').textContent=D.lotes.length;
+  document.getElementById('d-lots-list').innerHTML=D.lotes.map(l=>{
+    const c=getCuadre(l);
+    return `<div onclick="showLot('${l.id}')" style="display:flex;justify-content:space-between;align-items:center;padding:9px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:3px" onmouseover="this.style.background='var(--buk-purple-xl)'" onmouseout="this.style.background=''">
+      <div><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--buk-purple)">${l.id}${l.fecha_prod?' · '+l.fecha_prod.substring(0,5):''}</span><br><span style="font-size:11px;color:var(--text3);font-weight:500">${l.guia} · ${l.cajas_ok??0}/${l.cajas_guia} cajas · ${l.camara}</span></div>
+      <span class="badge ${c.cls}">${c.lbl}</span>
+    </div>`;}).join('');
+}
+
+// ═══════════════════════════════════════════
+// BALANCE
+// ═══════════════════════════════════════════
+function rBalance(){
+  document.getElementById('cuadre-tbody').innerHTML=D.lotes.map(l=>{
+    const c=getCuadre(l);
+    const rowCls=c.cls==='b-ok'?'r-ok':c.cls==='b-warn'?'r-warn':c.cls==='b-err'?'r-err':'';
+    return `<tr class="${rowCls}">
+      <td class="td-m td-purple">${l.guia}</td>
+      <td class="td-m td-purple">${l.id}${l.fecha_prod?' · '+l.fecha_prod.substring(0,5):''}</td>
+      <td style="font-weight:600">${l.prov}</td>
+      <td class="td-m">${l.cajas_guia}</td>
+      <td class="td-m ${l.cajas_ok===l.cajas_guia?'v-ok':'v-warn'}">${l.cajas_ok??'—'}</td>
+      <td class="td-m">${fmt(l.kg_oc)}</td>
+      <td class="td-m ${l.kg_rec?'v-ok':''}">${fmt(l.kg_rec)}</td>
+      <td class="td-m ${l.kg_rec&&absPct(l.kg_rec,l.kg_oc)>0.5?'v-warn':'v-ok'}">${l.kg_rec?(l.kg_rec-l.kg_oc>=0?'+':'')+fmt(l.kg_rec-l.kg_oc):'—'}</td>
+      <td>${l.camara}</td>
+      <td class="td-m v-ok">${fmt(l.kg_prod_out)}</td>
+      <td class="td-m v-warn">${fmt(l.pulpa)}</td>
+      <td class="td-m ${l.yield&&l.yield<74?'v-err':'v-ok'}">${l.yield?l.yield+'%':'—'}</td>
+      <td class="td-m">${l.cajas_pack?l.cajas_pack+' cajas':'—'}</td>
+      <td class="td-m">${fmt(l.kg_desp)}</td>
+      <td><span class="badge ${c.cls}">${c.lbl}</span></td>
+    </tr>`;}).join('');
+  document.getElementById('balance-cards').innerHTML=D.lotes.map(l=>buildBCard(l)).join('');
+}
+
+function buildBCard(l){
+  const stages=[
+    {n:'Guía OCR',icon:'📧',kg:l.cajas_guia,ref:null,bg:'var(--buk-blue-l)',lbl:'cajas guía'},
+    {n:'Recepción',icon:'⚖️',kg:l.kg_rec,ref:l.kg_oc,bg:'var(--buk-green-l)',lbl:(l.cajas_ok??'—')+'/'+l.cajas_guia+' cajas · kg pesaje'},
+    {n:'Ubicación',icon:'❄️',kg:l.kg_cam||l.kg_oc,ref:null,bg:'var(--buk-blue-l)',lbl:l.camara},
+    {n:'Semiterminado',icon:'🔪',kg:l.kg_prod_out?l.kg_prod_out+(l.pulpa||0):null,ref:l.kg_oc,bg:'var(--buk-purple-l)',lbl:'filete + pulpa'},
+    {n:'Despacho',icon:'🔫',kg:l.kg_desp,ref:l.kg_pack||l.kg_prod_out,bg:'var(--buk-orange-l)',lbl:'pistoleo'},
+  ];
+  const stHTML=stages.map((s,i)=>{
+    const isCur=(l.stage==='ocr'&&s.n==='Guía OCR')||(l.stage==='camara'&&s.n==='Recepción')||(l.stage==='descongelado'&&s.n==='Ubicación')||(l.stage==='semi'&&s.n==='Semiterminado')||(l.stage==='terminado'&&s.n==='Despacho');
+    const d=s.ref!=null&&s.kg!=null?s.kg-s.ref:null;
+    const p=s.ref&&s.kg?absPct(s.kg,s.ref):0;
+    const dc=d==null?'bd-neutral':p<=0.5?'bd-ok':p<=2?'bd-warn':'bd-err';
+    const dt=d==null?'—':(d>=0?'+':'')+Math.round(d)+' kg';
+    let sub='';
+    if(s.n==='Semiterminado'&&l.kg_prod_out!=null){
+      sub=`<div class="bcs-sub"><div class="bsi"><span class="bsi-k">Filete</span><span class="bsi-v ok">${fmt(l.kg_prod_out)}</span></div><div class="bsi"><span class="bsi-k">Pulpa</span><span class="bsi-v warn">${fmt(l.pulpa)}</span></div><div class="bsi"><span class="bsi-k">Rend.</span><span class="bsi-v ${l.yield>=75?'ok':'err'}">${l.yield}%</span></div></div>`;
+    }
+    return `<div class="bcs${isCur?' current':''}" onclick="showLot('${l.id}')">
+      <div class="bcs-head"><div class="bcs-icon-wrap" style="background:${s.bg}">${s.icon}</div><span class="bcs-n">${s.n}</span></div>
+      <div class="bcs-kg">${fmt(s.kg)}</div>
+      <div class="bcs-lbl">${s.lbl}</div>
+      ${s.ref!=null?`<div class="bcs-diff ${dc}">${dt}</div>`:''}
+      ${sub}
+    </div>`;}).join('');
+
+  const c=getCuadre(l);
+  const maxKg=l.kg_oc||1;
+  const pProd=l.kg_prod_out?Math.round(l.kg_prod_out/maxKg*100):0;
+  const pDes=l.pulpa?Math.round(l.pulpa/maxKg*100):0;
+  const pMer=l.kg_merma?Math.round(l.kg_merma/maxKg*100):0;
+  const sankey=l.kg_prod_out!=null?`<div class="sankey-wrap">
+    <div class="sankey-title">Distribución de masa</div>
+    <div class="sk-row"><span class="sk-lbl">${fmt(l.kg_prod_out)} kg</span><div class="sk-bar sk-prod" style="width:${pProd}%">${pProd>8?pProd+'% Producto':''}</div></div>
+    <div class="sk-row"><span class="sk-lbl">${fmt(l.pulpa)} kg</span><div class="sk-bar sk-des" style="width:${Math.max(pDes,2)}%">${pDes>8?pDes+'% Pulpa':''}</div></div>
+    <div class="sk-row"><span class="sk-lbl">${fmt(l.kg_merma)} kg</span><div class="sk-bar sk-merma" style="width:${Math.max(pMer,2)}%">${pMer>8?pMer+'% Merma':''}</div></div>
+  </div>`:'';
+
+  return `<div class="balance-card">
+    <div class="bc-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="bc-lot">${l.id}</span>
+        <span class="bc-name">${l.esp}</span>
+        <span style="font-size:11px;color:var(--text3);font-weight:600">· ${l.guia} · ${l.cajas_guia} cajas</span>
+      </div>
+      <span class="badge ${c.cls}">${c.lbl}</span>
+    </div>
+    <div class="bc-stages">${stHTML}</div>
+    ${sankey}
+    <div class="bc-footer">
+      <div class="bcf-item"><div class="bcf-dot" style="background:var(--buk-green)"></div>Filete: ${fmt(l.kg_prod_out)} kg</div>
+      <div class="bcf-item"><div class="bcf-dot" style="background:var(--buk-orange)"></div>Pulpa: ${fmt(l.pulpa)} kg</div>
+      <div class="bcf-item"><div class="bcf-dot" style="background:var(--gray-400)"></div>Ubicación: ${l.camara}</div>
+      <div style="margin-left:auto;font-weight:700;color:var(--buk-green-d)">Rend.: ${l.yield?l.yield+'%':'—'}</div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// PC-1
+// ═══════════════════════════════════════════
+function rPC1(){
+  document.getElementById('pc1-tbody').innerHTML=D.lotes.map(l=>{
+    const c=getCuadre(l);
+    return `<tr><td class="td-m td-purple">${l.id}</td><td class="td-m">${l.guia}</td><td style="font-weight:700">${l.prov}</td><td>${l.esp}</td>
+    <td class="td-m">${l.cajas_guia}</td><td class="td-m">${fmt(l.kg_oc)}</td><td><span class="badge ${c.cls}">${c.lbl}</span></td>
+    <td><button class="btn btn-g btn-sm" onclick="showLot('${l.id}')">Ver detalle</button></td></tr>`;}).join('');
+}
+function calcRec(){}
+function regRec(){
+  const kg=+document.getElementById('r-kg-oc').value||0,cajas=+document.getElementById('r-cajas-guia').value||0,esp=document.getElementById('r-esp').value,guia=document.getElementById('r-guia').value||'GD-MANUAL',prov=document.getElementById('r-oc').value||'Manual';
+  if(!kg||!cajas){notify('Faltan datos','Completa cajas y KG referencial de la guía.','warn');return;}
+  const id='LOT-2026-0'+Math.floor(Math.random()*900+100);
+  D.lotes.push({id,fecha_prod:'',guia,esp,prov,cajas_guia:cajas,cajas_ok:null,kg_oc:kg,kg_rec:null,kg_cam:null,kg_prod_in:null,kg_prod_out:null,kg_des:null,kg_merma:null,kg_desp:null,stage:'ocr',camara:'En tránsito',temp:null,fecha:new Date().toLocaleDateString('es-CL').substring(0,5),oc:guia,producto:null,yield:null,destino:null,horas:0,pulpa:null,calidad:null,calibre:null,cajas_pack:0,kg_pack:0,kg_stock:kg});
+  D.ocs.push({id:guia,tipo:'OCR',prov,esp,kg:cajas,fecha:new Date().toLocaleDateString('es-CL').substring(0,5),est:'lote_creado'});
+  rPC1();
+  notify(id+' creado','Guía '+guia+' procesada · '+cajas+' cajas · pendiente Caja OK.');
+}
+
+// ═══════════════════════════════════════════
+// PC-2
+// ═══════════════════════════════════════════
+function rPC2(){
+  const sel=document.getElementById('c-lot');
+  if(sel)sel.innerHTML='<option value="">Seleccionar...</option>'+D.lotes.filter(l=>['ocr','descongelado','transito'].includes(l.stage)||l.cajas_ok==null).map(l=>`<option value="${l.id}">${l.id} · ${l.guia} · ${l.cajas_guia} cajas</option>`).join('');
+  const caps={'C-01':5000,'C-02':4000,'C-03':3500};
+  document.getElementById('cam-cards').innerHTML=['C-01','C-02','C-03'].map(c=>{
+    const lots=D.lotes.filter(l=>l.camara&&l.camara.includes(c)),tk=lots.reduce((s,l)=>s+(l.kg_cam||l.kg_oc||0),0),cap=caps[c],p=Math.round(tk/cap*100);
+    const avgT=lots.filter(l=>l.temp).length?(lots.filter(l=>l.temp).reduce((s,l)=>s+l.temp,0)/lots.filter(l=>l.temp).length).toFixed(1):'--';
+    const col=p>85?'pb-red':p>65?'pb-orange':'pb-green';
+    return `<div class="cam-card"><div class="cam-hdr"><span class="cam-name">Cámara ${c}</span><span class="cam-temp ${parseFloat(avgT)<=-1.8?'t-ok':'t-warn'}">${avgT}°C</span></div>
+    <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:8px">${lots.length} lotes · ${fmt(tk)} / ${fmt(cap)} KG</div>
+    <div class="pb-w"><div class="pb-f ${col}" style="width:${p}%"></div></div>
+    <div style="text-align:right;font-size:10px;color:var(--text3);font-weight:600;margin-top:4px">${p}% capacidad</div></div>`;}).join('');
+  document.getElementById('pc2-tbody').innerHTML=D.lotes.filter(l=>l.camara).map(l=>{
+    const ok=l.cajas_ok===l.cajas_guia;
+    const p=l.kg_rec?absPct(l.kg_rec,l.kg_oc):null;
+    const kgOk=p!=null&&p<=0.5;
+    const cls=ok&&kgOk?'b-ok':l.cajas_ok==null||p==null?'b-warn':'b-err';
+    return `<tr><td class="td-m td-purple">${l.id}</td><td style="font-weight:700">${l.camara}</td>
+    <td class="td-m">${l.cajas_guia}</td><td class="td-m ${ok?'v-ok':'v-warn'}">${l.cajas_ok??'—'}</td>
+    <td class="td-m">${fmt(l.kg_oc)}</td>
+    <td class="td-m ${kgOk?'v-ok':'v-warn'}">${fmt(l.kg_rec)}</td>
+    <td class="td-m ${kgOk?'v-ok':'v-warn'}">${l.kg_rec?(l.kg_rec-l.kg_oc>=0?'+':'')+fmt(l.kg_rec-l.kg_oc):'—'}</td>
+    <td class="td-m" style="color:${l.horas>48?'var(--buk-red)':l.horas>36?'var(--buk-orange)':'var(--text)'};font-weight:700">${l.horas}h</td>
+    <td><span class="badge ${cls}">${ok&&kgOk?'✓ OK':'Revisar'}</span></td></tr>`;}).join('');
+}
+function calcCam(){
+  const id=document.getElementById('c-lot').value,l=D.lotes.find(x=>x.id===id),cajas=+document.getElementById('c-kg').value||0,pesaje=+document.getElementById('c-kg-pesaje').value||0;
+  const ref=document.getElementById('c-ref');
+  if(l){
+    document.getElementById('c-kg-guia').value=l.kg_oc||'';
+    ref.innerHTML=`<strong>Referencia:</strong> ${l.guia} · cajas guía = <strong>${l.cajas_guia}</strong> · KG guía ${fmt(l.kg_oc)} · tolerancia pesaje ≤0.5%`;
+  }
+  if(l&&cajas&&pesaje){
+    const cajaOk=cajas===l.cajas_guia,kgOk=absPct(pesaje,l.kg_oc)<=0.5,b=document.getElementById('c-banner');
+    b.style.display='flex';b.className='dbanner db-'+(cajaOk&&kgOk?'ok':'warn');
+    b.textContent=(cajaOk&&kgOk?'✓':'⚠')+' Recepción: cajas '+(cajaOk?'OK':'revisar')+' · pesaje '+(pesaje-l.kg_oc>=0?'+':'')+Math.round(pesaje-l.kg_oc)+' kg ('+absPct(pesaje,l.kg_oc).toFixed(2)+'%)';
+  }
+  else document.getElementById('c-banner').style.display='none';
+}
+function regCam(){
+  const id=document.getElementById('c-lot').value,cam=document.getElementById('c-cam').value,cajas=+document.getElementById('c-kg').value||0,pesaje=+document.getElementById('c-kg-pesaje').value||0,l=D.lotes.find(x=>x.id===id);
+  if(!l||!cajas||!pesaje){notify('Faltan datos','Completa lote, cajas y KG pesaje inicial.','warn');return;}
+  l.cajas_ok=cajas;l.kg_rec=pesaje;l.kg_cam=pesaje;l.camara=cam;l.stage=cam.includes('Descongelado')?'descongelado':cam.includes('Tránsito')?'transito':'camara';rPC2();
+  const ok=cajas===l.cajas_guia&&absPct(pesaje,l.kg_oc)<=0.5;
+  notify(id+' recibido','Caja OK + pesaje inicial registrado en '+cam+'.',ok?'ok':'warn');
+}
+
+// ═══════════════════════════════════════════
+// PC-3
+// ═══════════════════════════════════════════
+function rPC3(){
+  const sel=document.getElementById('p-lot');
+  if(sel)sel.innerHTML='<option value="">Seleccionar...</option>'+D.lotes.filter(l=>l.kg_cam&&['camara','descongelado','transito','semi'].includes(l.stage)).map(l=>`<option value="${l.id}">${l.id} · ${l.guia}</option>`).join('');
+  document.getElementById('pc3-tbody').innerHTML=D.lotes.filter(l=>l.kg_prod_in||l.kg_cam).map(l=>{
+    const semi=l.kg_prod_out!=null||l.pulpa!=null?(l.kg_prod_out||0)+(l.pulpa||0):null;
+    const cls=l.yield==null?'b-gray':l.yield>=75&&l.yield<=76.5?'b-ok':l.yield<74?'b-err':'b-warn';
+    return `<tr><td class="td-m td-purple">${l.id} · ${(l.fecha_prod||'').substring(0,5)}</td><td class="td-m">${fmt(l.kg_prod_in||l.kg_cam)}</td>
+    <td class="td-m v-ok">${fmt(l.kg_prod_out)}</td>
+    <td class="td-m v-warn">${fmt(l.pulpa)}</td>
+    <td class="td-m">${fmt(l.kg_merma)}</td>
+    <td class="td-m">${fmt(semi)}</td>
+    <td class="td-m" style="color:var(--buk-green-d);font-weight:700">${l.yield?l.yield+'%':'—'}</td>
+    <td class="td-m">75%-76%</td>
+    <td><span class="badge ${cls}">${l.yield==null?'Pendiente':l.yield<74?'Actuar hoy':'Registrado'}</span></td></tr>`;}).join('');
+}
+function loadProdLot(){
+  const id=document.getElementById('p-lot').value,l=D.lotes.find(x=>x.id===id);
+  const ki=document.getElementById('p-kg-in');
+  if(l)ki.value=l.kg_cam||l.kg_oc||'';
+  calcProd();
+}
+function calcProd(){
+  const ki=+document.getElementById('p-kg-in').value||0,kp=+document.getElementById('p-kg-prod').value||0,kd=+document.getElementById('p-kg-des').value||0,km=+document.getElementById('p-kg-merma').value||0,sum=kp+kd+km;
+  document.getElementById('p-total').textContent=sum?fmt(sum)+' kg':'—';
+  if(ki&&sum){
+    const y=(sum/ki*100);
+    const b=document.getElementById('p-banner');
+    b.style.display='flex';b.className='dbanner db-'+(y>=75&&y<=76.5?'ok':y<74?'err':'warn');b.textContent=(y>=75&&y<=76.5?'✓':'⚠')+' Rendimiento semiterminado '+y.toFixed(1)+'% · meta 75%-76%';
+    document.getElementById('p-yield').textContent=y.toFixed(1)+'%';
+  }else{document.getElementById('p-banner').style.display='none';}
+}
+function regProd(){
+  const id=document.getElementById('p-lot').value,kp=+document.getElementById('p-kg-prod').value||0,kd=+document.getElementById('p-kg-des').value||0,km=+document.getElementById('p-kg-merma').value||0,fecha=document.getElementById('p-prod').value,l=D.lotes.find(x=>x.id===id);
+  if(!l||!kp){notify('Faltan datos','Completa lote y KG filete.','warn');return;}
+  const ki=l.kg_cam||l.kg_oc||0,semi=kp+kd;l.kg_prod_in=ki;l.kg_prod_out=kp;l.pulpa=kd;l.kg_des=kd;l.kg_merma=km;l.yield=+(semi/ki*100).toFixed(1);l.producto='Filete + pulpa';l.fecha_prod=fecha;l.stage='semi';l.kg_stock=semi;
+  rPC3();
+  notify('Semiterminado registrado','Rendimiento '+l.yield+'% · filete + pulpa.',l.yield>=75&&l.yield<=76.5?'ok':'warn');
+}
+
+// ═══════════════════════════════════════════
+// PC-4
+// ═══════════════════════════════════════════
+function rPC4(){
+  const sel=document.getElementById('d-lot');
+  if(sel)sel.innerHTML='<option value="">Seleccionar...</option>'+D.lotes.filter(l=>l.stage==='semi'||l.stage==='terminado').map(l=>`<option value="${l.id}">${l.id} · ${fmt(l.kg_stock||l.kg_prod_out)} kg disponibles</option>`).join('');
+  document.getElementById('pc4-tbody').innerHTML=D.lotes.filter(l=>l.kg_pack||l.kg_desp||l.stage==='semi'||l.stage==='terminado'||l.stage==='despachado').map(l=>{
+    const stock=(l.kg_pack||0)-(l.kg_desp||0);
+    const cls=l.kg_desp?'b-ok':l.kg_pack?'b-warn':'b-gray';
+    return `<tr><td class="td-m td-purple">${l.id} · ${(l.fecha_prod||'').substring(0,5)}</td><td>${l.calidad||'—'}</td><td>${l.calibre||'—'}</td>
+    <td class="td-m">${l.cajas_pack||'—'}</td><td class="td-m">${fmt(l.kg_pack)}</td><td class="td-m">${fmt(l.kg_desp)}</td>
+    <td class="td-m">${fmt(Math.max(stock,0))}</td>
+    <td><span class="badge ${cls}">${l.kg_desp?'Pistoleado':l.kg_pack?'Empacado':'Pendiente'}</span></td></tr>`;}).join('');
+}
+function loadDespLot(){
+  const id=document.getElementById('d-lot').value,l=D.lotes.find(x=>x.id===id);
+  if(l)document.getElementById('d-ref').innerHTML=`<strong>Disponible:</strong> ${fmt(l.kg_stock||l.kg_prod_out)} kg semiterminado · etiqueta por lote + fecha`;
+  calcDesp();
+}
+function calcDesp(){
+  const id=document.getElementById('d-lot').value,l=D.lotes.find(x=>x.id===id),kg=+document.getElementById('d-kg').value||0;
+  if(l&&kg){const ok=kg<=(l.kg_stock||l.kg_prod_out||0),b=document.getElementById('d-banner');b.style.display='flex';b.className='dbanner db-'+(ok?'ok':'err');b.textContent=ok?'✓ Stock disponible para empaque':'✗ KG supera stock disponible';}
+  else document.getElementById('d-banner').style.display='none';
+}
+function regDesp(){
+  const id=document.getElementById('d-lot').value,kg=+document.getElementById('d-kg').value||0,cal=document.getElementById('d-dest').value,l=D.lotes.find(x=>x.id===id);
+  if(!l||!kg||!cal){notify('Faltan datos','Completa lote, calidad/calibre y KG.','warn');return;}
+  l.kg_pack=kg;l.calidad=cal.split('·')[0]?.trim()||cal;l.calibre=cal.split('·')[1]?.trim()||'S/C';l.cajas_pack=Math.max(1,Math.round(kg/20));l.stage='terminado';rPC4();
+  notify('Empaque registrado',id+' · '+fmt(kg)+' kg · listo para pistoleo en despacho.');
+}
+
+// ═══════════════════════════════════════════
+// STOCK / OC
+// ═══════════════════════════════════════════
+function rStock(f){
+  const data=f&&f!=='all'?D.stock.filter(s=>s.st===f):D.stock;
+  document.getElementById('stock-tbody').innerHTML=data.map(s=>{
+    const p=Math.round(s.kg/s.max*100),col=p>85?'pb-red':p>65?'pb-orange':'pb-purple';
+    const sl={camara:'Cámara',transito:'Tránsito',descongelado:'Descongelado',semi:'Semiterminado',terminado:'Terminado'}[s.st]||s.st;
+    const bc={camara:'b-blue',transito:'b-warn',descongelado:'b-orange',semi:'b-purple',terminado:'b-ok'}[s.st]||'b-gray';
+    return `<tr><td style="font-weight:700">${s.prod}</td><td class="td-m td-purple">${s.lote}</td><td style="font-weight:600">${s.ubi}</td>
+    <td class="td-m" style="font-weight:700">${fmt(s.kg)} kg</td>
+    <td style="min-width:110px"><div style="display:flex;align-items:center;gap:7px"><div class="pb-w" style="flex:1"><div class="pb-f ${col}" style="width:${p}%"></div></div><span style="font-size:10px;font-family:var(--mono);color:var(--text3);font-weight:600">${p}%</span></div></td>
+    <td><span class="badge ${bc}">${sl}</span></td></tr>`;}).join('');
+}
+function fStock(el,f){document.querySelectorAll('[onclick^="fStock"]').forEach(e=>e.classList.remove('active'));el.classList.add('active');rStock(f==='all'?null:f);}
+function rOC(){
+  document.getElementById('oc-tbody').innerHTML=D.ocs.map(o=>{
+    const cls={lote_creado:'b-ok',caja_ok:'b-ok',descongelado:'b-orange',en_tránsito:'b-warn',revisar_ocr:'b-warn',pendiente:'b-blue'}[o.est]||'b-gray';
+    return `<tr><td class="td-m td-purple">${o.id}</td><td><span class="badge ${o.tipo==='OCR'?'b-blue':'b-purple'}">${o.tipo}</span></td>
+    <td style="font-weight:600">${o.prov}</td><td>${o.esp}</td><td class="td-m" style="font-weight:700">${fmt(o.kg)} cajas</td><td class="td-m">${o.fecha}</td>
+    <td><span class="badge ${cls}">${o.est.replace('_',' ')}</span></td></tr>`;}).join('');
+}
+function crearOC(){
+  const p=document.getElementById('oc-prov').value,e=document.getElementById('oc-esp').value,k=+document.getElementById('oc-kg').value||0;
+  if(!p||!k){notify('Faltan datos','Completa proveedor y cajas.','warn');return;}
+  const id='GD-2026-'+Math.floor(Math.random()*900+100);
+  D.ocs.push({id,tipo:'MANUAL',prov:p,esp:e,kg:k,fecha:new Date().toLocaleDateString('es-CL').substring(0,5),est:'lote_creado'});
+  toggleF('f-oc');rOC();notify(id+' ingresada','Guía manual creada para contingencia.');
+}
+
+// ═══════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════
+function showLot(id){
+  const l=D.lotes.find(x=>x.id===id);if(!l)return;
+  document.getElementById('m-title').textContent=l.id+' — Trazabilidad Operacional';
+  const c=getCuadre(l);
+  const maxKg=l.kg_oc||1;
+  const stages=[{lbl:'KG guía',kg:l.kg_oc,ico:'📧'},{lbl:'KG recepción',kg:l.kg_rec,ico:'✅'},{lbl:'KG ubicación',kg:l.kg_cam,ico:'❄️'},{lbl:'KG semiterminado',kg:(l.kg_prod_out||0)+(l.pulpa||0)||null,ico:'🔪'},{lbl:'KG empaque',kg:l.kg_pack,ico:'🏷️'},{lbl:'KG despacho',kg:l.kg_desp,ico:'🔫'}];
+  const bars=stages.filter(s=>s.kg!=null).map(s=>{
+    const w=Math.max(Math.round(s.kg/maxKg*100),2);
+    const col=s.lbl.includes('despacho')?'var(--buk-orange)':s.lbl.includes('semi')||s.lbl.includes('empaque')?'var(--buk-green)':'var(--buk-purple)';
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+      <span style="width:16px;text-align:center">${s.ico}</span>
+      <span style="font-size:11px;font-weight:600;color:var(--text2);width:110px;text-align:right">${s.lbl}</span>
+      <div style="flex:1;height:22px;background:var(--gray-100);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${w}%;background:${col};border-radius:6px;display:flex;align-items:center;padding:0 8px;transition:width .8s ease">
+          <span style="font-size:10px;font-weight:700;color:#fff;white-space:nowrap">${fmt(s.kg)} kg</span>
+        </div>
+      </div>
+    </div>`;}).join('');
+
+  document.getElementById('m-body').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;background:var(--buk-purple-xl);padding:14px;border-radius:10px;font-size:12px;border:1.5px solid rgba(91,45,142,.1)">
+      <div><span style="color:var(--text3);font-weight:600">Especie:</span> <strong>${l.esp}</strong></div>
+      <div><span style="color:var(--text3);font-weight:600">Proveedor:</span> ${l.prov}</div>
+      <div><span style="color:var(--text3);font-weight:600">Guía:</span> <strong>${l.guia}</strong></div>
+      <div><span style="color:var(--text3);font-weight:600">Cajas:</span> <strong>${l.cajas_ok??'—'} / ${l.cajas_guia}</strong></div>
+      <div><span style="color:var(--text3);font-weight:600">Ubicación:</span> <strong>${l.camara}</strong></div>
+      <div><span style="color:var(--text3);font-weight:600">Rendimiento:</span> <strong style="color:var(--buk-green-d)">${l.yield?l.yield+'%':'—'}</strong></div>
+      <div><span style="color:var(--text3);font-weight:600">Etapa:</span> <span class="badge b-purple">${l.stage}</span></div>
+      <div><span style="color:var(--text3);font-weight:600">Estado:</span> <span class="badge ${c.cls}">${c.lbl}</span></div>
+    </div>
+    <div class="card-t" style="margin-bottom:10px">Flujo de KG por etapa</div>
+    ${bars}`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeM(){document.getElementById('modal').classList.remove('open');}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
+
+// ═══════════════════════════════════════════
+// SIMULATION
+// ═══════════════════════════════════════════
+const SIM={r:false,ph:-1};
+const PHASES=[
+  {id:'mail',name:'Correo/OCR',icon:'📧',truck:5,road:8,kg:'GD-77821',status:'lote creado',
+   logs:[{c:'lhead',t:'═══ ETAPA 1: GUÍA POR CORREO ═══'},{c:'linf',t:'guias@planta.cl recibe GD-77821.pdf desde Mar Brava'},{c:'lok',t:'✓ OCR extrae proveedor, especie, 128 cajas y 3.215 kg ref.'},{c:'lok',t:'✓ LOT-SIM-001 creado automáticamente antes de llegada'}],
+   c1t:'Guía OCR',c1i:'📧',c1b:'var(--buk-blue-l)',c1:[['Correo','guias@planta.cl','ok'],['Guía','GD-77821','ok'],['Proveedor','Mar Brava',''],['Cajas guía','128','ok'],['Lote','LOT-SIM-001','ok']],
+   c2t:'Ingreso manual disponible',c2i:'📝',c2b:'var(--buk-blue-l)',c2:[['Modo','OCR automático','ok'],['Contingencia','manual habilitado',''],['OC','no requerida','ok'],['Estado','camión en ruta','dv-w'],['Trazabilidad','lote asignado','ok']]},
+  {id:'rec',name:'Recepción',icon:'⚖️',truck:18,road:22,kg:'3.218 kg',status:'recibido',
+   logs:[{c:'lhead',t:'═══ ETAPA 2: RECEPCIÓN · CAJA OK + PESAJE ═══'},{c:'linf',t:'Camión llega a planta · se valida contra guía'},{c:'lok',t:'✓ Caja OK: 128/128 cajas'},{c:'lok',t:'✓ Pesaje inicial: 3.218 kg vs guía 3.215 kg'},{c:'lok',t:'✓ Diferencia: +3 kg (0.09%) · dentro de tolerancia'}],
+   c1t:'Recepción física',c1i:'⚖️',c1b:'var(--buk-green-l)',c1:[['Cajas guía','128',''],['Cajas recibidas','128','ok'],['KG guía','3.215 kg',''],['KG pesaje','3.218 kg','ok'],['Resultado','Recepción OK','ok']],
+   c2t:'Siguiente ubicación',c2i:'🚦',c2b:'var(--buk-green-l)',c2:[['Decisión','descongelado','dv-w'],['Δ pesaje','+3 kg / 0.09%','ok'],['Tránsito','a proceso','ok'],['Lote + fecha','LOT-SIM-001 · 05/05','ok'],['Estado','recibido','ok']]},
+  {id:'ubi',name:'Ubicación',icon:'❄️',truck:34,road:39,kg:'descongelado',status:'en proceso',
+   logs:[{c:'lhead',t:'═══ ETAPA 3: CÁMARA / TRÁNSITO / DESCONGELADO ═══'},{c:'lok',t:'✓ Lote asignado a Descongelado'},{c:'linf',t:'También podría quedar en Cámara C-01/C-02/C-03 o Tránsito'}],
+   c1t:'Ubicación del lote',c1i:'❄️',c1b:'var(--buk-blue-l)',c1:[['Ubicación','Descongelado','ok'],['KG ref.','3.215 kg',''],['Cajas','128','ok'],['Estado','listo proceso','ok'],['Registro cámara','disponible','']],
+   c2t:'Inventario vivo',c2i:'📊',c2b:'var(--buk-blue-l)',c2:[['Cámara','lotes + kg','ok'],['Tránsito','habilitado','ok'],['Descongelado','habilitado','ok'],['Escalable','insumos futuro',''],['Stock','actualizado','ok']]},
+  {id:'semi',name:'Semiterminado',icon:'🔪',truck:54,road:59,kg:'75.8%',status:'rendimiento OK',
+   logs:[{c:'lhead',t:'═══ ETAPA 4: FILETEADO / SEMITERMINADO ═══'},{c:'lok',t:'✓ Filete semiterminado: 2.160 kg'},{c:'lok',t:'✓ Pulpa raspado espinas: 278 kg'},{c:'lok',t:'✓ Rendimiento: 75.8% · dentro estándar 75%-76%'},{c:'linf',t:'Trazabilidad simplificada por lote + fecha, sin escanear cada tina'}],
+   c1t:'Semiterminado',c1i:'🔪',c1b:'var(--buk-purple-l)',c1:[['Materia prima','3.215 kg',''],['Filete','2.160 kg','ok'],['Pulpa','278 kg','ok'],['Semiterminado','2.438 kg','ok'],['Rendimiento','75.8%','ok']],
+   c2t:'Control diario',c2i:'📈',c2b:'var(--buk-purple-l)',c2:[['Meta Roberto','75%-76%',''],['Desviación','0.0%','ok'],['Acción','sin alerta','ok'],['Pago/control','grupo proceso',''],['Fecha prod.','05/05/2026','ok']]},
+  {id:'pack',name:'Empaque',icon:'🏷️',truck:74,road:79,kg:'manual',status:'etiquetado',
+   logs:[{c:'lhead',t:'═══ ETAPA 5: EMPAQUE MANUAL ═══'},{c:'linf',t:'Paola ingresa lote, fecha, kg y cajas'},{c:'lok',t:'✓ Etiqueta simple: lote, calidad, fecha, vencimiento y calibre'},{c:'linf',t:'No se exige pistoleo en empaque'}],
+   c1t:'Etiqueta producto propio',c1i:'🏷️',c1b:'var(--buk-green-l)',c1:[['Lote','LOT-SIM-001','ok'],['Calidad','Premium',''],['Fecha prod.','05/05/2026','ok'],['Vencimiento','20/05/2026',''],['Calibre','4-5 lb','']],
+   c2t:'Empaque manual',c2i:'📦',c2b:'var(--buk-green-l)',c2:[['Cajas','96','ok'],['KG','1.920 kg','ok'],['Operadora','Paola',''],['Modo offline','permitido','ok'],['Stock','terminado','ok']]},
+  {id:'ship',name:'Despacho',icon:'🔫',truck:94,road:100,kg:'stock -1.920',status:'completado',
+   logs:[{c:'lhead',t:'═══ ETAPA 6: DESPACHO CON PISTOLEO ═══'},{c:'lok',t:'✓ Cajas pistoleadas al subir al camión'},{c:'lok',t:'✓ Stock rebajado automáticamente: -1.920 kg'},{c:'lok',t:'✅ CICLO COMPLETO GD-SIM-001 · LOT-SIM-001'}],
+   c1t:'Pistoleo despacho',c1i:'🔫',c1b:'var(--buk-orange-l)',c1:[['Cajas leídas','96/96','ok'],['KG cargados','1.920 kg','ok'],['Destino','Cliente local',''],['Stock','rebajado','ok'],['Estado','despachado','ok']],
+   c2t:'Trazabilidad final',c2i:'✅',c2b:'var(--buk-green-l)',c2:[['Origen','GD-77821','ok'],['Lote + fecha','LOT-SIM-001 · 05/05','ok'],['Caja OK','128/128','ok'],['Rendimiento','75.8%','ok'],['Despacho','pistoleado','ok']]}
+];
+
+let simInit=false;
+function initSim(){
+  if(simInit)return;simInit=true;
+  const cps=document.getElementById('s-cps');
+  const pos=[8,25,42,59,76,94],lbl=['Correo\nOCR','Caja\nOK','Ubicación','Semi\nterm.','Empaque','Despacho'];
+  cps.innerHTML=pos.map((p,i)=>`<div class="sim-cp" style="left:${p}%"><div class="sim-cpd" id="scpd-${i}"></div><div class="sim-cpl" id="scpl-${i}">${lbl[i]}</div></div>`).join('');
+  document.getElementById('s-stages').innerHTML=PHASES.map(p=>`<div class="ss" id="ss-${p.id}"><span class="ss-ico">${p.icon}</span><span class="ss-name">${p.name}</span><span class="ss-kg" id="ss-kg-${p.id}">pendiente</span></div>`).join('');
+  document.getElementById('s-cards').innerHTML=`
+    <div class="sdc" id="sdc-1" style="display:flex;align-items:center;justify-content:center;min-height:160px"><div style="text-align:center;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">▶</div><div style="font-size:13px;font-weight:600">Inicia la simulación</div></div></div>
+    <div class="sdc" id="sdc-2" style="display:flex;align-items:center;justify-content:center;min-height:160px"><div style="text-align:center;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">📊</div><div style="font-size:12px;font-weight:600">Datos del balance aquí</div></div></div>`;
+}
+function addLog(c,t){
+  const log=document.getElementById('s-log'),now=new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const d=document.createElement('div');d.className='ll';
+  d.innerHTML=`<span class="lts">${now}</span><span class="${c}">${t}</span>`;
+  log.appendChild(d);log.scrollTop=log.scrollHeight;
+}
+function mkCard(title,icon,bg,rows){
+  return `<div class="sdc-h"><div class="sdc-ico" style="background:${bg}">${icon}</div><div><div class="sdc-title">${title}</div></div></div>`+rows.map(([k,v,cls])=>`<div class="dr"><span class="dk">${k}</span><span class="dv ${cls||''}">${v}</span></div>`).join('');
+}
+function nextPhase(){
+  if(SIM.r)return;SIM.ph++;
+  if(SIM.ph>=PHASES.length){document.getElementById('s-btn').textContent='✅ Ciclo completo';document.getElementById('s-btn').disabled=true;return;}
+  SIM.r=true;document.getElementById('s-btn').disabled=true;
+  const ph=PHASES[SIM.ph];
+  document.getElementById('s-truck').style.left=ph.truck+'%';
+  document.getElementById('s-fill').style.width=ph.road+'%';
+  document.querySelectorAll('.ss').forEach(e=>e.classList.remove('act'));
+  const ss=document.getElementById('ss-'+ph.id);ss.classList.add('act');
+  document.getElementById('ss-kg-'+ph.id).textContent=ph.kg;
+  for(let i=0;i<=SIM.ph;i++){
+    const d=document.getElementById('scpd-'+i),l=document.getElementById('scpl-'+i);
+    if(d)d.className='sim-cpd '+(i===SIM.ph?'cur':'reach');
+    if(l)l.className='sim-cpl reach';
+  }
+  const c1=document.getElementById('sdc-1'),c2=document.getElementById('sdc-2');
+  c1.className='sdc hl';c1.innerHTML=mkCard(ph.c1t,ph.c1i,ph.c1b,ph.c1);
+  c2.className='sdc hl';c2.innerHTML=mkCard(ph.c2t,ph.c2i,ph.c2b,ph.c2);
+  document.getElementById('s-step').textContent=ph.name+' · '+ph.kg+' · '+ph.status;
+  document.getElementById('sim-prog').textContent=(SIM.ph+1)+' / '+PHASES.length+' etapas';
+  let li=0;
+  function nl(){
+    if(li<ph.logs.length){addLog(ph.logs[li].c,ph.logs[li].t);li++;setTimeout(nl,450);}
+    else{
+      ss.classList.remove('act');ss.classList.add('done');
+      const d=document.getElementById('scpd-'+SIM.ph);if(d)d.className='sim-cpd reach';
+      SIM.r=false;
+      const last=SIM.ph===PHASES.length-1;
+      document.getElementById('s-btn').textContent=last?'✅ Completado':'▶ Siguiente etapa';
+      document.getElementById('s-btn').disabled=last;
+    }
+  }
+  setTimeout(nl,200);
+}
+function resetSim(){
+  SIM.r=false;SIM.ph=-1;
+  document.getElementById('s-truck').style.left='2%';
+  document.getElementById('s-fill').style.width='0%';
+  document.getElementById('s-btn').textContent='▶ Iniciar Simulación';
+  document.getElementById('s-btn').disabled=false;
+  document.getElementById('sim-prog').textContent='0 / '+PHASES.length+' etapas';
+  document.getElementById('s-step').textContent='Listo para iniciar';
+  document.getElementById('s-log').innerHTML='<div class="ll"><span class="lts">--:--</span><span class="linf">Sistema reiniciado · presione Iniciar</span></div>';
+  document.querySelectorAll('.ss').forEach(e=>{e.classList.remove('act','done');});
+  document.querySelectorAll('[id^="ss-kg-"]').forEach(e=>{e.textContent='pendiente';});
+  document.querySelectorAll('[id^="scpd-"]').forEach(e=>{e.className='sim-cpd';});
+  document.querySelectorAll('[id^="scpl-"]').forEach(e=>{e.className='sim-cpl';});
+  document.getElementById('sdc-1').className='sdc';document.getElementById('sdc-2').className='sdc';
+  document.getElementById('sdc-1').innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:160px;text-align:center;color:var(--text3)"><div><div style="font-size:36px;margin-bottom:8px">▶</div><div style="font-size:13px;font-weight:600">Inicia la simulación</div></div></div>';
+  document.getElementById('sdc-2').innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:160px;text-align:center;color:var(--text3)"><div><div style="font-size:36px;margin-bottom:8px">📊</div><div style="font-size:12px;font-weight:600">Datos del balance aquí</div></div></div>';
+}
+
+// INIT
+const now=new Date();
+const dateStr=now.toLocaleDateString('es-CL',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+document.getElementById('t-date').textContent=dateStr;
+document.getElementById('dash-date').textContent=now.toLocaleDateString('es-CL',{day:'numeric',month:'long'});
+rDash();rOC();
+</script>
+</body>
+</html>
