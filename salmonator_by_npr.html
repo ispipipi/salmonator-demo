@@ -580,6 +580,15 @@ tr:hover td{background:var(--buk-purple-xl)}
 .brand-title{font-size:13px;font-weight:900;letter-spacing:.4px;color:var(--text);line-height:1}
 .brand-by{font-size:9px;font-weight:800;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 .page-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.help-btn{display:inline-flex;align-items:center;gap:6px}
+.help-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.help-sec{border:1.5px solid var(--border);border-radius:12px;padding:14px;background:var(--gray-50)}
+.help-sec-title{font-size:12px;font-weight:800;color:var(--text);margin-bottom:10px}
+.help-list{display:grid;gap:9px}
+.help-item{font-size:12px;line-height:1.45;color:var(--text2)}
+.help-item strong{color:var(--text)}
+.help-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:var(--buk-purple-xl);color:var(--buk-purple);font-size:10px;font-weight:800;font-family:var(--mono);margin-bottom:5px}
+.help-note{margin-bottom:14px;padding:12px 14px;border-radius:12px;background:var(--buk-blue-l);border:1.5px solid rgba(33,150,243,.18);font-size:12px;font-weight:600;color:var(--text2);line-height:1.45}
 .quick-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
 .quick-action{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;text-align:left;font-family:var(--font);transition:transform .18s,box-shadow .18s,border-color .18s}
 .quick-action:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);border-color:rgba(91,45,142,.25)}
@@ -598,6 +607,7 @@ tr:hover td{background:var(--buk-purple-xl)}
 @media (max-width:1100px){
   .g4{grid-template-columns:repeat(2,1fr)}
   .g3{grid-template-columns:repeat(2,1fr)}
+  .help-grid{grid-template-columns:1fr 1fr}
   .quick-strip{grid-template-columns:repeat(2,1fr)}
   .bc-stages{grid-template-columns:repeat(2,minmax(180px,1fr))}
   .bcs{border-bottom:1.5px solid var(--border)}
@@ -614,6 +624,7 @@ tr:hover td{background:var(--buk-purple-xl)}
   .topbar-r{margin-left:0;width:100%;justify-content:space-between}
   .content{padding:14px;overflow:visible}
   .sec-hdr{gap:12px;flex-direction:column;align-items:stretch}
+  .help-grid{grid-template-columns:1fr}
   .g4,.g3,.g2,.quick-strip,.sim-dg{grid-template-columns:1fr}
   .flow-map,.ocr-grid,.check-row{grid-template-columns:1fr}
   .flow-node::after{display:none}
@@ -698,6 +709,7 @@ tr:hover td{background:var(--buk-purple-xl)}
     <div class="topbar-r">
       <span class="topbar-badge" id="t-date"></span>
       <div class="page-actions">
+        <button class="btn btn-g btn-sm help-btn" onclick="openHelp()">? Ayuda</button>
         <button class="btn btn-g btn-sm" onclick="go('trazabilidad')">🧭 Flujo</button>
         <button class="btn btn-p btn-sm" onclick="go('sim')">▶ Simulación</button>
       </div>
@@ -1069,6 +1081,70 @@ tr:hover td{background:var(--buk-purple-xl)}
   <div class="mb">
     <div class="mh"><div class="mt-m" id="m-title">Lote</div><button class="mc" onclick="closeM()">×</button></div>
     <div id="m-body"></div>
+  </div>
+</div>
+<div class="mo" id="help-modal">
+  <div class="mb" style="width:min(980px,94vw)">
+    <div class="mh">
+      <div>
+        <div class="mt-m">Ayuda Salmonator</div>
+        <div style="font-size:12px;color:var(--text3);font-weight:600;margin-top:4px">Qué hace cada menú, para qué sirve cada botón y cómo leer los términos del flujo.</div>
+      </div>
+      <button class="mc" onclick="closeHelp()">×</button>
+    </div>
+    <div class="help-note">
+      Esta ayuda está pensada para un uso comercial simple. El flujo base del demo es: guía por correo, OCR, creación de lote, recepción con Caja OK y pesaje inicial, ubicación, semiterminado, empaque manual, despacho con pistoleo y rebaja de stock.
+    </div>
+    <div class="help-grid">
+      <section class="help-sec">
+        <div class="help-sec-title">Menús</div>
+        <div class="help-list">
+          <div class="help-item"><div class="help-chip">Dashboard</div><strong>Resumen del día.</strong> Muestra KPIs, alertas, lotes activos y accesos rápidos al flujo principal.</div>
+          <div class="help-item"><div class="help-chip">Flujo Operacional</div><strong>Trazabilidad por lote.</strong> Permite revisar el avance del lote, los kilos por etapa y los desvíos de cuadre o rendimiento.</div>
+          <div class="help-item"><div class="help-chip">Guía + OCR</div><strong>Ingreso inicial.</strong> Simula lectura de guías recibidas por correo, extracción de datos y creación automática del lote.</div>
+          <div class="help-item"><div class="help-chip">Recepción Caja OK</div><strong>Control físico inicial.</strong> Valida cajas, pesaje inicial y define si el lote va a cámara, tránsito o descongelado.</div>
+          <div class="help-item"><div class="help-chip">Semiterminado</div><strong>Producción diaria.</strong> Registra filete, pulpa, merma y calcula rendimiento del lote procesado.</div>
+          <div class="help-item"><div class="help-chip">Empaque / Despacho</div><strong>Salida comercial.</strong> Permite empacar manualmente y luego pistolear el despacho para rebajar stock.</div>
+          <div class="help-item"><div class="help-chip">Stock</div><strong>Inventario vivo.</strong> Muestra dónde está cada lote, cuántos kilos quedan y en qué estado se encuentra.</div>
+          <div class="help-item"><div class="help-chip">Guías OCR</div><strong>Bandeja documental.</strong> Lista las guías detectadas por OCR o ingresadas manualmente para contingencia.</div>
+          <div class="help-item"><div class="help-chip">Simulación</div><strong>Demo guiada.</strong> Recorre el caso completo de Ricardo y Roberto paso a paso.</div>
+        </div>
+      </section>
+      <section class="help-sec">
+        <div class="help-sec-title">Botones</div>
+        <div class="help-list">
+          <div class="help-item"><div class="help-chip">? Ayuda</div>Abre este menú de referencia.</div>
+          <div class="help-item"><div class="help-chip">🧭 Flujo</div>Abre el mapa operacional y el balance del lote para revisar la trazabilidad completa.</div>
+          <div class="help-item"><div class="help-chip">▶ Simulación</div>Ejecuta el recorrido del demo con los estados y mensajes del flujo acordado.</div>
+          <div class="help-item"><div class="help-chip">Procesar guía</div>Entra al módulo donde se crea el lote desde la guía de despacho recibida por correo.</div>
+          <div class="help-item"><div class="help-chip">Ingreso manual</div>Se usa cuando falla OCR, internet o correo. Permite seguir operando y cargar datos por contingencia.</div>
+          <div class="help-item"><div class="help-chip">✓ Crear lote desde guía</div>Crea un lote nuevo a partir de los datos capturados en la guía.</div>
+          <div class="help-item"><div class="help-chip">✓ Guardar recepción</div>Confirma cajas, pesaje inicial y ubicación del lote en planta.</div>
+          <div class="help-item"><div class="help-chip">✓ Registrar</div>Guarda el resultado del semiterminado y calcula el rendimiento del día.</div>
+          <div class="help-item"><div class="help-chip">✓ Registrar empaque</div>Guarda calidad, calibre, kilos y cajas del producto terminado.</div>
+          <div class="help-item"><div class="help-chip">🔫 Pistolear despacho</div>Simula lectura de cajas al subir al camión y rebaja stock automáticamente.</div>
+          <div class="help-item"><div class="help-chip">Ver detalle</div>Abre una ficha del lote con kilos por etapa, estado y trazabilidad operacional.</div>
+          <div class="help-item"><div class="help-chip">📧 Revisar correo</div>Simula consulta del buzón de guías para detectar nuevos documentos.</div>
+        </div>
+      </section>
+      <section class="help-sec">
+        <div class="help-sec-title">Glosario</div>
+        <div class="help-list">
+          <div class="help-item"><div class="help-chip">OCR</div>Lectura automática de la guía para extraer proveedor, especie, cajas y kilos.</div>
+          <div class="help-item"><div class="help-chip">Lote + fecha</div>Identificador trazable. El mismo lote puede producirse en fechas distintas y por eso la fecha acompaña la trazabilidad.</div>
+          <div class="help-item"><div class="help-chip">Caja OK</div>Confirmación visual de que la cantidad de cajas recibidas coincide con la guía.</div>
+          <div class="help-item"><div class="help-chip">Pesaje inicial</div>Primer control de kilos en recepción. Se compara contra la guía y muestra diferencia y tolerancia.</div>
+          <div class="help-item"><div class="help-chip">Tránsito</div>Estado intermedio para lotes que no entran a cámara y pasan directo a proceso.</div>
+          <div class="help-item"><div class="help-chip">Descongelado</div>Ubicación o estado del lote previo a proceso cuando corresponde acondicionarlo.</div>
+          <div class="help-item"><div class="help-chip">Semiterminado</div>Primer pesaje real post proceso. Incluye filete y pulpa antes de clasificación final.</div>
+          <div class="help-item"><div class="help-chip">Pulpa</div>Producto obtenido por raspado de espinas, registrado como salida del proceso.</div>
+          <div class="help-item"><div class="help-chip">Merma</div>Pérdida del proceso que no queda como producto vendible.</div>
+          <div class="help-item"><div class="help-chip">Rendimiento</div>Relación entre materia prima y semiterminado. En este demo la referencia operacional es 75% a 76%.</div>
+          <div class="help-item"><div class="help-chip">Pistoleo</div>Lectura por código al momento del despacho. En este flujo no se exige en empaque, sí en salida.</div>
+          <div class="help-item"><div class="help-chip">Rebaja stock</div>Descuento automático del inventario al confirmar el despacho del lote empacado.</div>
+        </div>
+      </section>
+    </div>
   </div>
 </div>
 <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
@@ -1452,7 +1528,10 @@ function showLot(id){
   document.getElementById('modal').classList.add('open');
 }
 function closeM(){document.getElementById('modal').classList.remove('open');}
+function openHelp(){document.getElementById('help-modal').classList.add('open');}
+function closeHelp(){document.getElementById('help-modal').classList.remove('open');}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
+document.getElementById('help-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeHelp();});
 
 // ═══════════════════════════════════════════
 // SIMULATION
